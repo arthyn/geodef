@@ -1,0 +1,47 @@
+-----------------------------------------------------------------------------------------
+--
+-- main.lua
+--
+-----------------------------------------------------------------------------------------
+
+-- Your code here
+local screenWidth = display.contentWidth
+local screenHeight = display.contentHeight
+
+local points = {}
+local grid = {}
+for xPiece = 0, 10 do
+	points[xPiece] = {}
+	for yPiece = 0, 20 do
+		points[xPiece][yPiece] = {}
+		points[xPiece][yPiece].x = xPiece*screenWidth/10
+		points[xPiece][yPiece].y = yPiece*screenHeight/20	
+	end
+end
+
+
+local count = 0
+for x = 0, 9 do
+	for y = 0, 19 do
+	grid[count] = {}
+	top1 = points[x][y]
+	top2 = points[x+1][y]
+	bottom1 = points[x][y+1]
+	bottom2 = points[x+1][y+1]
+	print(top1.x .. " ".. top1.y .. " To " .. bottom1.x .. " " .. bottom1.y)
+	display.newLine(top1.x, top1.y, top2.x, top2.y)
+	display.newLine(bottom1.x, bottom1.y, bottom2.x, bottom2.y)
+	display.newLine(top1.x +1 , top1.y +1, bottom1.x +1, bottom1.y +1)
+	display.newLine(top2.x +1, top2.y +1, bottom2.x+1, bottom2.y+1)
+	count = count + 1 
+	end
+end
+for x = 0, 10 do
+	for y = 0, 20 do
+		
+		local myCircle = display.newCircle( points[x][y].x, points[x][y].y, 5 )
+		myCircle:setFillColor(128,128,128)
+		myCircle.alpha = 0;
+		transition.to( myCircle, {time=1000, alpha=1})
+	end
+end
