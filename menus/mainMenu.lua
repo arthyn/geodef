@@ -15,28 +15,24 @@ local function createButton(buttonLabel, release)
 end
 
 -- buttons
-local currentGamesButton
 local newGameButton
 local settingsButton
 local helpButton
 
-local function currentGamesButtonRelease()
-	print("current games")
-	storyboard.gotoScene("currentGames", "fade", 500)
-	return true
-end
-
 local function newGameButtonRelease()
+	storyboard.gotoScene("newGame")
 	print("new game")
 	return true
 end
 
 local function settingsButtonRelease()
+	storyboard.gotoScene("settings")
 	print("settings")
 	return true
 end
 
 local function helpButtonRelease()
+	storyboard.gotoScene("help")
 	print("help")
 	return true
 end
@@ -50,24 +46,20 @@ function scene:createScene( event )
 	name.x = display.contentWidth * .5
 	name.y = display.contentHeight * (1/8)
 
-	currentGamesButton = createButton("Current Games", currentGamesButtonRelease)
-	currentGamesButton.x = display.contentWidth * .25
-	currentGamesButton.y = display.contentHeight * (3/8)
-
 	newGameButton = createButton("New Game", newGameButtonRelease)
-	newGameButton.x = display.contentWidth * .75
+	newGameButton.x = display.contentWidth * .25
 	newGameButton.y = display.contentHeight * (3/8)
 
 	settingsButton = createButton("Settings", settingsButtonRelease)
-	settingsButton.x = display.contentWidth * .25
-	settingsButton.y = display.contentHeight * (5/8)
+	settingsButton.x = display.contentWidth * .75
+	settingsButton.y = display.contentHeight * (3/8)
 
 	helpButton = createButton("Help", helpButtonRelease)
-	helpButton.x = display.contentWidth * .75
+	helpButton.x = display.contentWidth * .25
 	helpButton.y = display.contentHeight * (5/8)
 
 	-- insert all objects here
-	group:insert(currentGamesButton)
+	group:insert(name)
 	group:insert(newGameButton)
 	group:insert(settingsButton)
 	group:insert(helpButton)
