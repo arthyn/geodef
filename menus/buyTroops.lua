@@ -1,7 +1,7 @@
 local storyboard = require "storyboard"
 local scene = storyboard.newScene()
 local widget = require "widget"
-troopsBought = {}
+
 circles = display.newGroup()
 
 local function createButton(buttonLabel, release)
@@ -17,32 +17,64 @@ local function createButton(buttonLabel, release)
 end
 
 local function backButtonRelease()
-	storyboard.gotoScene( "gameScreen" )
+	local options = {
+		params = {
+			pathSend = path,
+			sizeSend = pathSize,
+			coinSend = coins,
+			gridSend = grid,
+			towerSend = towers
+		}
+	}
+	storyboard.gotoScene( "gameScreen", options )
 end
 
 local function finishButtonRelease()
-	-- send data to opponent, wait for data from opponent
-	-- transition to gameScreen and show the animations
+	local options = {
+		params = {
+			pathSend = path,
+			hpSend = health,
+			sizeSend = pathSize,
+			coinSend = coins,
+			gridSend = grid,
+			towerSend = towers,
+			spawnList = troopsBought
+		}
+	}
+		storyboard.gotoScene( "gameScreen", options )
 end
 
 function redTap(event)
-	table.insert( troopsBought, "red" )
-	drawTroopList()
+	if coins > 0 then
+		table.insert( troopsBought, "red" )
+		coins = coins - 1 
+		coinsDisplay.text = coins .. " Coins"
+		drawTroopList()
+	end
 end
 
 function blueTap(event)
-	table.insert( troopsBought, "blue" )
-	drawTroopList()
+	if coins > 0 then
+		table.insert( troopsBought, "blue" )
+		coins = coins - 1
+		coinsDisplay.text = coins .. " Coins"
+		drawTroopList()
+	end
 end
 
 function greenTap(event)
-	table.insert( troopsBought, "green")
-	drawTroopList()
+	if coins > 0 then
+		table.insert( troopsBought, "green")
+		coins = coins - 1
+		coinsDisplay.text = coins .. " Coins"
+		drawTroopList()
+	end
 end
 
 function smallCircleTap(event)
-	print("HEYYYYY")
 	table.remove( troopsBought, event.target.index )
+	coins = coins + 1
+	coinsDisplay.text = coins .. " Coins"
 	drawTroopList()
 end
 
@@ -68,6 +100,13 @@ end
 
 function scene:createScene( event )
 	local group = self.view
+	coins = event.params.coinsSend
+	path = event.params.pathSend
+	health = event.params.hpSend
+	pathSize = event.params.sizeSend
+	coins = event.params.coinsSend
+	grid = event.params.gridSend
+	towers = event.params.towerSend
 
 	local redCircle = display.newCircle(display.contentWidth * (.3),
 		display.contentHeight * (.1), 50)
@@ -83,9 +122,7 @@ function scene:createScene( event )
 		display.contentHeight * (.1), 50)
 	blueCircle:setFillColor(0, 0, 255)
 	blueCircle:addEventListener("tap", blueTap)
-
-	coins = 100
-	local coinsDisplay = display.newText(coins.. " coins", 0, 0, native.systemFont, 40)
+	coinsDisplay = display.newText(coins.. " Coins", 0, 0, native.systemFont, 40)
 	coinsDisplay.x = display.contentWidth * (.5)
 	coinsDisplay.y = display.contentHeight * (.8)
 
@@ -102,11 +139,13 @@ function scene:createScene( event )
 	group:insert(greenCircle)
 	group:insert(coinsDisplay)
 	group:insert(backButton)
+	group:insert(finishButton)
 
 end
 
 function scene:enterScene( event )
 	local group = self.view
+	troopsBought = {}
 	
 end
 
