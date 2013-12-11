@@ -9,13 +9,56 @@ local function createButton(buttonLabel, release)
 		fontSize = 30,
 		width = 300,
 		height = 100,
-		onRelease = release
+		onRelease = release,
+		defaultFile = "button.png"
 	}
 	return button
 end
 
+local function backButtonRelease()
+	storyboard.gotoScene("mainMenu")
+end
+
+local function onSegmentPress( event )
+    local target = event.target
+    if target.segmentNumber == 2 then
+    	audio.stop(1)
+    else
+    	local bgMusic = audio.loadStream( "music.mp3" )
+		audio.play(bgMusic, {channel=1, loops=-1} )
+
+	end
+end
+
 function scene:createScene( event )
 	local group = self.view
+
+	local background = display.newImage( "wallpaper.png")
+	background:translate(0,0)
+	background:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
+
+	local name = display.newText("geodef", 0, 0, native.systemFont, 100)
+	name.x = display.contentWidth * .5
+	name.y = display.contentHeight * (4/13)
+
+	local backButton = createButton("Back", backButtonRelease)
+	backButton.x = display.contentWidth * (.5)
+	backButton.y = display.contentHeight * (.75)
+
+	local musicToggle = widget.newSegmentedControl{
+		top = display.contentHeight/2,
+		left = display.contentWidth/4,
+		segmentWidth = display.contentWidth/4,
+    	segments = { "MUSIC ON", "MUSIC OFF"},
+   		defaultSegment = 1,
+    	onPress = onSegmentPress,
+    	labelSize = 50
+	}
+
+	group:insert(background)
+	group:insert(backButton)
+	group:insert(musicToggle)
+	group:insert(name)
 
 end
 

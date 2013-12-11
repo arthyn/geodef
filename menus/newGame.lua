@@ -9,7 +9,8 @@ local function createButton(buttonLabel, release)
 		fontSize = 30,
 		width = 300,
 		height = 100,
-		onRelease = release
+		onRelease = release,
+		defaultFile = "button.png"
 	}
 	return button
 end
@@ -23,7 +24,7 @@ function scene:createScene( event )
 	local group = self.view
 
 	local bg = display.newRect( 0, 0, display.contentWidth, display.contentHeight)
-	bg:setFillColor(197, 197, 197)
+	bg:setFillColor(0, 31, 61)
 
 	local spinner = widget.newSpinner{
 		top = display.contentHeight * (2/8),
@@ -32,7 +33,7 @@ function scene:createScene( event )
 	}
 	spinner:start()
 
-	local waiting = display.newText( "Waiting for an opponent...", 0, 0, native.systemFont, 50)
+	local waiting = display.newText( " Waiting for an opponent...", 0, 0, native.systemFont, 50)
 	waiting.x = display.contentWidth * (.5)
 	waiting.y = display.contentHeight * (.5)
 

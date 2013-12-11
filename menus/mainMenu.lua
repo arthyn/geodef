@@ -9,18 +9,13 @@ local function createButton(buttonLabel, release)
 		fontSize = 30,
 		width = 300,
 		height = 100,
-		onRelease = release
+		onRelease = release,
+		defaultFile = "button.png"
 	}
 	return button
 end
 
--- buttons
-local newGameButton
-local settingsButton
-local helpButton
-
 local function newGameButtonRelease()
-	storyboard.gotoScene("newGame")
 	return true
 end
 
@@ -34,28 +29,56 @@ local function helpButtonRelease()
 	return true
 end
 
+local function multiplayerButtonRelease()
+	storyboard.gotoScene("newGame")
+	return true
+end
+
+local function creditsButtonRelease()
+	storyboard.gotoScene("creditsScreen")
+	return true
+end
+
 function scene:createScene( event )
 	local group = self.view
 
 	-- create all items here
 
-	local name = display.newText("geodef", 0, 0, native.systemFont, 50)
+	local background = display.newImage( "wallpaper.png")
+	background:translate(0,0)
+	background:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
+
+	local name = display.newText("geodef", 0, 0, native.systemFont, 100)
 	name.x = display.contentWidth * .5
-	name.y = display.contentHeight * (1/8)
+	name.y = display.contentHeight * (4/13)
 
-	newGameButton = createButton("New Game", newGameButtonRelease)
+	local newGameButton = createButton("Single Player", newGameButtonRelease)
 	newGameButton.x = display.contentWidth * .25
-	newGameButton.y = display.contentHeight * (3/8)
+	newGameButton.y = display.contentHeight * (4/8)
+	
 
-	settingsButton = createButton("Settings", settingsButtonRelease)
-	settingsButton.x = display.contentWidth * .75
-	settingsButton.y = display.contentHeight * (3/8)
 
-	helpButton = createButton("Help", helpButtonRelease)
-	helpButton.x = display.contentWidth * .25
-	helpButton.y = display.contentHeight * (5/8)
+	local multiplayerButton = createButton("Multiplayer", multiplayerButtonRelease)
+	multiplayerButton.x = display.contentWidth * .75
+	multiplayerButton.y = display.contentHeight * (4/8)
+
+	local settingsButton = createButton("Settings", settingsButtonRelease)
+	settingsButton.x = display.contentWidth * .80
+	settingsButton.y = display.contentHeight * (6/8)
+
+	local helpButton = createButton("Help", helpButtonRelease)
+	helpButton.x = display.contentWidth * .20
+	helpButton.y = display.contentHeight * (6/8)
+
+	local creditsButton = createButton("Credits", creditsButtonRelease)
+	creditsButton.x = display.contentWidth * .50
+	creditsButton.y = display.contentHeight * (6/8)
+	
 
 	-- insert all objects here
+	group:insert(background)
+	group:insert(creditsButton)
+	group:insert(multiplayerButton)
 	group:insert(name)
 	group:insert(newGameButton)
 	group:insert(settingsButton)
