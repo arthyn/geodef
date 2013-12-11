@@ -204,8 +204,8 @@ function DrawPath(path, pathSize, grid)
 	print(pathSize)
 	for index = 0, pathSize-1 do
 
-		grid[path[index].x][path[index].y].rect:setFillColor(217,230,247) --color of the path
-		grid[path[index].x][path[index].y].rect.strokeWidth = 5
+		grid[path[index].x][path[index].y].rect:setFillColor(217,230,247)  --color of the path
+		grid[path[index].x][path[index].y].rect.strokeWidth = 5            --width of the boarder around the path
 		grid[path[index].x][path[index].y].rect:setStrokeColor(197,81,134) --boarder color
 		grid[path[index].x][path[index].y].rect:removeEventListener("tap", ChangeColor)
 
@@ -340,7 +340,8 @@ end
 
 
 
-
+local backgroundMusic = audio.loadStream("The_Alien_Agenda.mp3")
+local backgroundMusicChannel = audio.play(backgroundMusic, {channel = 0, loops = -1, fadein = 3000 })
 
 math.randomseed( os.time() ) --seed random number generator
 math.random() --randomly generate a value
