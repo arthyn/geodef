@@ -16,7 +16,6 @@ end
 
 local function cancelButtonRelease()
 	storyboard.gotoScene("mainMenu")
-	print("cancel")
 	return true
 end
 
@@ -50,6 +49,9 @@ end
 
 function scene:enterScene( event )
 	local group = self.view
+
+	--networking code should go here
+	--when an opponent is found, transition to gameScreen
 
 end
 

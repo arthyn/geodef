@@ -21,19 +21,16 @@ local helpButton
 
 local function newGameButtonRelease()
 	storyboard.gotoScene("newGame")
-	print("new game")
 	return true
 end
 
 local function settingsButtonRelease()
 	storyboard.gotoScene("settings")
-	print("settings")
 	return true
 end
 
 local function helpButtonRelease()
 	storyboard.gotoScene("help")
-	print("help")
 	return true
 end
 
