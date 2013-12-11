@@ -20,6 +20,11 @@ local function backButtonRelease()
 	storyboard.gotoScene( "gameScreen" )
 end
 
+local function finishButtonRelease()
+	-- send data to opponent, wait for data from opponent
+	-- transition to gameScreen and show the animations
+end
+
 function redTap(event)
 	table.insert( troopsBought, "red" )
 	drawTroopList()
@@ -81,12 +86,16 @@ function scene:createScene( event )
 
 	coins = 100
 	local coinsDisplay = display.newText(coins.. " coins", 0, 0, native.systemFont, 40)
-	coinsDisplay.x = display.contentWidth * (.75)
+	coinsDisplay.x = display.contentWidth * (.5)
 	coinsDisplay.y = display.contentHeight * (.8)
 
 	local backButton = createButton("Back", backButtonRelease)
 	backButton.x = display.contentWidth * (.15)
 	backButton.y = display.contentHeight * (.8)
+
+	local finishButton = createButton("Attack!", finishButtonRelease)
+	finishButton.x = display.contentWidth * (.85)
+	finishButton.y = display.contentHeight * (.8)
 
 	group:insert(redCircle)
 	group:insert(blueCircle)
