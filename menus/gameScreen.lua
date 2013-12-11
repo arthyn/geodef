@@ -123,19 +123,28 @@ function ChangeColor(event)
 		coins = coins - 1
 		coinsDisplay.text = coins .. " Coins"
 		event.target:setFillColor(255,0,0)
+		event.target.strokeWidth = 2
+		event.target:setStrokeColor(0,255,255)
 
 	elseif event.target.color == "red" then
 		event.target.color = "blue"
 		grid[event.target.xPos][event.target.yPos].color = "blue"
 		event.target:setFillColor(0,0,255)
+		event.target.strokeWidth = 2
+		event.target:setStrokeColor(255,0,0)
+
 	elseif event.target.color == "blue" then
 		event.target.color = "green"
 
 		event.target:setFillColor(55,125,35)
+		event.target.strokeWidth = 2
+		event.target:setStrokeColor(170,85,187)
 	else
 		event.target.color = "none"
 		grid[event.target.xPos][event.target.yPos].color = "none"
 		event.target:setFillColor(0,0,0,0)
+		event.target.strokeWidth = 1
+		event.target:setStrokeColor(255,255,255,25)
 		table.remove(towers,event.target.index)
 		event.target.index = 0
 		towerCount = towerCount - 1
@@ -180,14 +189,20 @@ function reBuildGrid(copiedGrid, height, width)
 				towers[towerCount] = rectangle
 				towerCount = towerCount + 1
 				rectangle:setFillColor(55,125,35)
+				rectangle.strokeWidth = 2
+				rectangle:setStrokeColor(170,85,187)
 			elseif rectangle.color == "red" then
 				towers[towerCount] = rectangle
 				towerCount = towerCount + 1
 				rectangle:setFillColor(255,0,0)
+				rectangle.strokeWidth = 2
+				rectangle:setStrokeColor(0,255,255)
 			elseif rectangle.color == "blue" then
 				towers[towerCount] = rectangle
 				towerCount = towerCount + 1
 				rectangle:setFillColor(0,0,255)
+				rectangle.strokeWidth = 2
+				rectangle:setStrokeColor(255,255,0)
 			else 
 				rectangle.color = "none"
 				rectangle:setFillColor(0,0,0,0)
@@ -340,9 +355,9 @@ end
 
 function DrawPath(path, pathSize, grid)
 	for index = 0, pathSize-1 do
-		grid[path[index].x][path[index].y].rect:setFillColor(217,230,247)  --color of the path
-		grid[path[index].x][path[index].y].rect.strokeWidth = 5            --width of the boarder around the path
-		grid[path[index].x][path[index].y].rect:setStrokeColor(197,81,134) --boarder color
+		grid[path[index].x][path[index].y].rect:setFillColor(204,229,255)  --color of the path
+		grid[path[index].x][path[index].y].rect.strokeWidth = 3            --width of the boarder around the path
+		grid[path[index].x][path[index].y].rect:setStrokeColor(51,0,102) --boarder color
 		grid[path[index].x][path[index].y].rect:removeEventListener("tap", ChangeColor)
 
 	end
@@ -365,11 +380,17 @@ function SpawnTroop(color)
 		troops[troopCount].alive = true
 		if color == "red" then
 			troops[troopCount]:setFillColor(255,0,0)
+			troops[troopCount].strokeWidth = 2
+			troops[troopCount]:setStrokeColor(0,0,0)
 		elseif color == "blue" then
 			troops[troopCount]:setFillColor(0,0,255)
+			troops[troopCount].strokeWidth = 2
+			troops[troopCount]:setStrokeColor(0,0,0)
 		else
 			color = "green"
 			troops[troopCount]:setFillColor(55,125,35)
+			troops[troopCount].strokeWidth = 2
+			troops[troopCount]:setStrokeColor(0,0,0)
 		end
 		
 		troopCount = troopCount + 1
@@ -459,6 +480,7 @@ function TowersCanHit(troop)
 				if towers[i].color == "red" then
 					--if the color of the tower is red, then the laser is red
 					laser:setColor(255,0,0)
+
 				elseif towers[i].color == "blue" then
 					--if the tower is blue then the laser is blue
 					laser:setColor(0,0,255)
