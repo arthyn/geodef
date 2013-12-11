@@ -135,7 +135,7 @@ function ChangeColor(event)
 	else
 		event.target.color = "none"
 		grid[event.target.xPos][event.target.yPos].color = "none"
-		event.target:setFillColor(140,140,140)
+		event.target:setFillColor(0,0,0,0)
 		table.remove(towers,event.target.index)
 		event.target.index = 0
 		towerCount = towerCount - 1
@@ -168,8 +168,9 @@ function reBuildGrid(copiedGrid, height, width)
 			bottom1 = points[x][y+1]
 			bottom2 = points[x+1][y+1]
 			rectangle = display.newRect(gridGroup, top1.x +2, top1.y +2, screenWidth/width -2, screenHeight/height - 2)
-			rectangle:setFillColor(140,140,140)
-			rectangle:setStrokeColor(255,255,255)
+			rectangle:setFillColor(0,0,0,0)
+			rectangle.strokeWidth = 1
+			rectangle:setStrokeColor(255,255,255, 25)
 			rectangle.color = copiedGrid[x][y].rect.color
 			rectangle.xPos = x
 			rectangle.yPos = y
@@ -189,15 +190,16 @@ function reBuildGrid(copiedGrid, height, width)
 				rectangle:setFillColor(0,0,255)
 			else 
 				rectangle.color = "none"
-				rectangle:setFillColor(140,140,140)
-				rectangle:setStrokeColor(255,255,255)
+				rectangle:setFillColor(0,0,0,0)
+			rectangle.strokeWidth = 1
+			rectangle:setStrokeColor(255,255,255, 25)
 			end
 			rectangle:addEventListener("tap", ChangeColor)
 			grid[x][y].rect = rectangle
 			count = count + 1 
 		end
 	end
-	for x = 0, width do
+	--[[for x = 0, width do
 		for y = 0, height do
 			
 			local myCircle = display.newCircle(gridGroup, points[x][y].x, points[x][y].y, 5 )
@@ -206,6 +208,7 @@ function reBuildGrid(copiedGrid, height, width)
 			transition.to( myCircle, {time=1000, alpha=1})
 		end
 	end
+	]]
 end
 
 function BuildGrid(points,grid,height, width)
@@ -234,8 +237,11 @@ function BuildGrid(points,grid,height, width)
 			bottom2 = points[x+1][y+1]
 			grid[x][y] = {} 
 			rectangle = display.newRect(gridGroup, top1.x +2, top1.y +2, screenWidth/width -2, screenHeight/height - 2)
-			rectangle:setFillColor(140,140,140)
-			rectangle:setStrokeColor(255,255,255)
+			--rectangle:setFillColor(140,140,140)
+			rectangle:setFillColor(0,0,0,0)
+			rectangle.strokeWidth = 1
+			rectangle:setStrokeColor(255,255,255, 25)
+			
 			rectangle.color = "none"
 			rectangle.xPos = x
 			rectangle.yPos = y
@@ -245,7 +251,7 @@ function BuildGrid(points,grid,height, width)
 			count = count + 1 
 		end
 	end
-	for x = 0, width do
+--[[	for x = 0, width do
 		for y = 0, height do
 			
 			local myCircle = display.newCircle(gridGroup, points[x][y].x, points[x][y].y, 5 )
@@ -254,7 +260,7 @@ function BuildGrid(points,grid,height, width)
 			transition.to( myCircle, {time=1000, alpha=1})
 		end
 	end
-
+--]]
 end
 
 function BuildPath(height, width, path)
@@ -334,7 +340,9 @@ end
 
 function DrawPath(path, pathSize, grid)
 	for index = 0, pathSize-1 do
-		grid[path[index].x][path[index].y].rect:setFillColor(255,255,255)
+		grid[path[index].x][path[index].y].rect:setFillColor(217,230,247)  --color of the path
+		grid[path[index].x][path[index].y].rect.strokeWidth = 5            --width of the boarder around the path
+		grid[path[index].x][path[index].y].rect:setStrokeColor(197,81,134) --boarder color
 		grid[path[index].x][path[index].y].rect:removeEventListener("tap", ChangeColor)
 
 	end
