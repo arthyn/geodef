@@ -17,8 +17,22 @@
 --
 -----------------------------------------------------------------------------------------
 
--- Change the color of the towers when you tap
+local redEnemy = display.newImage( "../images/enemy/red.png" )
+local yellowEnemy = display.newImage( "../images/enemy/yellow.png" )
+local greenEnemy = display.newImage( "../images/enemy/green.png" )
+local pinkEnemy = display.newImage( "../images/enemy/pink.png" )
+local blueEnemy = display.newImage( "../images/enemy/blue.png" )
+local orangeEnemy = display.newImage( "../images/enemy/orange.png" )
 
+local redTower = display.newImage( "../images/tower/red.png" )
+local yellowTower = display.newImage( "../images/tower/yellow.png" )
+local greenTower = display.newImage( "../images/tower/green.png" )
+local pinkTower = display.newImage( "../images/tower/pink.png" )
+local blueTower = display.newImage( "../images/tower/blue.png" )
+local orangeTower = display.newImage( "../images/tower/orange.png" )
+
+-- Prototype: function ChangeColor(event)
+-- Description: Change the color of the towers when you tap
 function ChangeColor(event)
 
 	--toggle color on tap
