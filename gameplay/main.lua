@@ -4,7 +4,6 @@
 --
 -- Create grid - MICAH RIGGAN / JAMIE JUNEAU
 -- Create tower select popup - STEPHEN ROTEN / JAMIE JUNEAU
--- Create enemies menu – MICAH RIGGAN / STEPHEN ROTEN
 -- Spawn enemies - RAYMOND REED / ZACK THEVENOT
 -- Create a path - JAMIE JUNEAU / ANGELOS PILLOS
 -- Make enemies traverse path - RAYMOND REED / RYAN HALEY
