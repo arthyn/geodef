@@ -139,6 +139,14 @@ function BuildPath(grid, height, width, path)
 				path[count].x = randomPlace.x
 				path[count].y = randomPlace.y
 				count = count + 1
+            if randomPlace.x < width-1 then --right
+				randomPlace.x = randomPlace.x + 1
+				path[count]={}
+				path[count].x = randomPlace.x
+				path[count].y = randomPlace.y
+				count = count + 1
+                end
+
 				lastDirection = direction
 			end
 		end
