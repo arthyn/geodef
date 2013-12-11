@@ -1,10 +1,23 @@
 -----------------------------------------------------------------------------------------
+-- Course/Section: CMPS 453
+-- Group: C
 --
--- main.lua
+-- Create grid - MICAH RIGGAN / JAMIE JUNEAU
+-- Create tower select popup - STEPHEN ROTEN / JAMIE JUNEAU
+-- Create enemies menu – MICAH RIGGAN / STEPHEN ROTEN
+-- Spawn enemies - RAYMOND REED / ZACK THEVENOT
+-- Create a path - JAMIE JUNEAU / ANGELOS PILLOS
+-- Make enemies traverse path - RAYMOND REED / RYAN HALEY
+-- Towers attack - TRAVIS DEROUEN / HUNTER MILLER
+--
+-- Certificate of Authenticity:
+-- 
+-- We certify that the code in this 
+-- project is entirely our own work. 
 --
 -----------------------------------------------------------------------------------------
 
--- Your code here
+-- Change the color of the towers when you tap
 
 function ChangeColor(event)
 
@@ -38,6 +51,7 @@ function ChangeColor(event)
 
 end
 
+-- The following function builds the grid
 
 function BuildGrid(points,grid,height, width)
 
@@ -87,6 +101,8 @@ function BuildGrid(points,grid,height, width)
 	end
 
 end
+
+-- The following functions generates the array for drawing the path --
 
 function BuildPath(grid, height, width, path)
 	--Build a path based off of the grid and put that into path
@@ -162,6 +178,8 @@ function BuildPath(grid, height, width, path)
 	return count
 	
 end
+
+-- The following function draws the generated path --
 
 function DrawPath(path, pathSize, grid)
 
