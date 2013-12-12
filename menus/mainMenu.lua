@@ -16,6 +16,22 @@ local function createButton(buttonLabel, release)
 end
 
 local function newGameButtonRelease()
+	path = {}
+	height = 10
+	width = 20
+	pathSize = BuildPath(height,width,path)
+	while pathSize < (height * width)/4 do  --if it doesn't use at least 1/3 of the grid
+		for index = 0, pathSize-1 do
+			table.remove( path )
+		end
+		pathSize = BuildPath(height,width,path) --rebuild path
+	end
+	local options = {
+		params = {
+			pathSend = path, sizeSend=pathSize
+		}
+	}
+	storyboard.gotoScene("singlePlayer", options)
 	return true
 end
 
@@ -30,7 +46,16 @@ local function helpButtonRelease()
 end
 
 local function multiplayerButtonRelease()
-	storyboard.gotoScene("newGame")
+	path = {}
+	height = 10
+	width = 20
+	pathSize = BuildPath(height,width,path)
+	local options = {
+		params = {
+			pathSend = path, sizeSend=pathSize
+		}
+	}
+	storyboard.gotoScene("gameScreen", options)
 	return true
 end
 
@@ -105,5 +130,74 @@ scene:addEventListener("createScene", scene)
 scene:addEventListener("enterScene", scene)
 scene:addEventListener("exitScene", scene)
 scene:addEventListener("destroyScene", scene)
+
+function BuildPath(height, width, path)
+	--Build a path based off of the grid and put that into path
+	
+	starty = math.random(0,height-1) --generate between 0 and max height
+	randomPlace = {}
+	randomPlace.x = 0
+	randomPlace.y = starty
+	
+	count = 0
+	path[count]={}
+	path[count].x = randomPlace.x
+	path[count].y = randomPlace.y
+	count = count + 1
+
+	-- loop, choosing random direction until you get to grid[width-1][y]
+	-- 0 for down, 1 for up 2 for right
+		direction = math.random(0, 2)
+		lastDirection = direction
+	while randomPlace.x ~= width-1  do
+
+
+		if direction == 0 and lastDirection ~= 1 then --down and just didn't go up
+			if randomPlace.y < height-1 then  --not the bottom
+				randomPlace.y = randomPlace.y + 1
+				path[count]={}
+				path[count].x = randomPlace.x
+				path[count].y = randomPlace.y
+				count = count + 1
+				lastDirection = direction
+			end
+
+		end
+
+		if direction == 1  and lastDirection ~= 0 then --up and just didn't go down
+			if randomPlace.y > 0 then -- not the top
+				randomPlace.y = randomPlace.y - 1
+				path[count]={}
+				path[count].x = randomPlace.x
+				path[count].y = randomPlace.y
+				count = count + 1
+				lastDirection = direction
+			end
+		end
+
+		if direction == 2 then
+			if randomPlace.x < width-1 then --right
+				randomPlace.x = randomPlace.x + 1
+				path[count]={}
+				path[count].x = randomPlace.x
+				path[count].y = randomPlace.y
+				count = count + 1
+				lastDirection = direction
+			end
+			if randomPlace.x < width-1 then --right
+				randomPlace.x = randomPlace.x + 1
+				path[count]={}
+				path[count].x = randomPlace.x
+				path[count].y = randomPlace.y
+				count = count + 1
+				lastDirection = direction
+			end
+		end
+		
+		direction = math.random(0, 2)
+	end
+	return count
+	
+end
 
 return scene
