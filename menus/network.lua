@@ -1,9 +1,7 @@
 local LoadBalancingClient
 local LoadBalancingConstants
 local Logger
-local Array
 local tableutil
-local byteutil
 local photon
 
 if pcall(require,"plugin.photon") then -- try to load Corona photon plugin
@@ -11,22 +9,18 @@ if pcall(require,"plugin.photon") then -- try to load Corona photon plugin
     LoadBalancingClient = photon.loadbalancing.LoadBalancingClient
     LoadBalancingConstants = photon.loadbalancing.constants
     Logger = photon.common.Logger
-    Array = photon.common.type.Array
     tableutil = photon.common.util.tableutil
-    byteutil = photon.common.util.byteutil
 else  -- or load photon.lua module
     photon = require("photon")
     LoadBalancingClient = require("photon.loadbalancing.LoadBalancingClient")
     LoadBalancingConstants = require("photon.loadbalancing.constants")
     Logger = require("photon.common.Logger")
-    Array = require("photon.common.type.Array")
     tableutil = require("photon.common.util.tableutil")
-    byteutil = require("photon.common.util.byteutil")
 end
 
 math.randomseed(os.time())
 
-local Constants = {
+Constants = {
     SendPath = 1,
     SendTroops = 2,
     GameResult = 3,
@@ -37,8 +31,7 @@ local appInfo = require("cloud-app-info")
 
 local function createClient()
     local client = LoadBalancingClient.new(appInfo.MasterAddress, appInfo.AppId, appInfo.AppVersion)
-    client.useGroups = true
-    client.automove = true
+
     -- connect to random room or create new one automatocally
     -- close button click sets this to false
     client.autoconnect = true
@@ -51,6 +44,8 @@ local function createClient()
     function client:start()
         self.winCondition = false
         self:connect()
+        print(self:isConnectedToMaster())
+        print(self:isInLobby())
     end
 
     function client:service1()
@@ -64,6 +59,7 @@ local function createClient()
             end
 
             if state == LoadBalancingClient.State.JoinedLobby then
+                print("Joined Lobby, Joining Random Room")
                 if self.autoconnect then
                     self:joinRandomRoom()
                 end
@@ -72,6 +68,13 @@ local function createClient()
             end
         end
 
+    function client:onJoinRoom()
+        self.logger:info("Joined Room: ", self:myRoom().name)
+        self.logger:info("onJoinRoom myRoom", self:myRoom())
+        self.logger:info("onJoinRoom myActor", self:myActor())
+        self.logger:info("onJoinRoom myRoomActors", self:myRoomActors())
+        
+    end
 
 
     function client:onEvent(code, content, actorNr)

@@ -1,6 +1,26 @@
 local storyboard = require "storyboard"
 local scene = storyboard.newScene()
 local widget = require "widget"
+local LoadBalancingClient
+local LoadBalancingConstants
+local Logger
+local tableutil
+local photon
+
+if pcall(require,"plugin.photon") then -- try to load Corona photon plugin
+    photon = require "plugin.photon"    
+    LoadBalancingClient = photon.loadbalancing.LoadBalancingClient
+    LoadBalancingConstants = photon.loadbalancing.constants
+    Logger = photon.common.Logger
+    tableutil = photon.common.util.tableutil
+else  -- or load photon.lua module
+    photon = require("photon")
+    LoadBalancingClient = require("photon.loadbalancing.LoadBalancingClient")
+    LoadBalancingConstants = require("photon.loadbalancing.constants")
+    Logger = require("photon.common.Logger")
+    tableutil = require("photon.common.util.tableutil")
+end
+
 local function createButton(buttonLabel, release)
 	local button = widget.newButton{
 		label = buttonLabel,
@@ -25,7 +45,8 @@ function troopsButtonRelease()
 			sizeSend = pathSize,
 			coinsSend = coins,
 			gridSend = grid,
-			towerSend = towers
+			towerSend = towers,
+			client,
 		}
 	}
 	storyboard.gotoScene("buyTroops", options)
@@ -63,6 +84,7 @@ function scene:enterScene( event )
 	local group = self.view
 	path = event.params.pathSend
 	pathSize = event.params.sizeSend
+	client = event.params.client
 	gridGroup = display.newGroup()
 	if event.params.towerSend == nil then
 		print("Entry from first screen")
@@ -83,13 +105,10 @@ function scene:enterScene( event )
 		print(coins .. "Entering from troop buy")
 		reBuildGrid(Copygrid, height, width)
 	end
-		DrawPath(path,pathSize,grid)
-	if event.params.spawnList ~= nil then
-		troops = {}
-		troopCount = 0
-		troopsButton:setEnabled(false)
-		GameLogic(event.params.spawnList)
-	end
+		
+	DrawPath(path,pathSize,grid)	
+	GameLogic()
+
 end
 
 function scene:exitScene( event )
@@ -414,18 +433,40 @@ function MoveTroop(index)
 		coinsDisplay.text = coins .. " Coins"
 		transition.to(troops[index],{ delay = index * 450, x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y})
 	-- if it is the end, damage the base
-
 end
 
-function GameLogic(spawnArray)
+function GameLogic()
 	--Take in array of troops to spawn, spawn one, move it, spawn another, move it
-	print( table.getn(spawnArray)  )
-	timers = {}
-	RoundEnded = false
-	for num = 1, table.getn(spawnArray) do
-		SpawnTroop(spawnArray[num])
-		move = function() return MoveTroop(num-1) end
-		timers[num] = timer.performWithDelay(500, move, pathSize-1)
+	while(not client.winCondition) do
+		--Win condition check
+		if(client.winCondition) then
+			--Received win
+			local options = { params = {true}}
+			storyboard.gotoScene( "endScreen", options)
+		elseif(health <= 0) then
+			--Base destroyed, send message to indicate loss
+			client.raiseEvent(Constants.GameResult, {true}, {receivers = LoadBalancingConstants.ReceiverGroup.Others})
+			client.winCondition = true
+			local options = { params = {false}}
+			storyboard.gotoScene( "endScreen", options)
+		end
+
+		--Check for spawned troops
+		if(client.spawnList ~= nil) then
+			--Clear troop list
+			troops = {}
+			troopCount = 0
+			troopsButton:setEnabled(false)
+			print( table.getn(client.spawnList)  )
+			timers = {}
+			RoundEnded = false
+			for num = 1, table.getn(client.spawnList) do
+				SpawnTroop(client.spawnList[num])
+				move = function() return MoveTroop(num-1) end
+				timers[num] = timer.performWithDelay(500, move, pathSize-1)
+			end
+			client.spawnList = nil
+		end
 	end
 
 	-- add funtion to shoot at the troops with a cool down of 1 second. 
@@ -484,23 +525,6 @@ function TowersCanHit(troop)
 			end
 		end
 	end
-end
-
-
-function SendPathOverNetwork()
-	-- If you are creator, send path
-end
-
-function ReceivePathOverNetwork()
-	-- If you are not creator, receive path
-end
-
-function SendTroopsOverNetwork()
-	-- At the end of your turn, send which type
-end
-
-function ReceiveTroopsOverNetwork()
-	-- At the beginnning of your turn, receive where the enemy has placed their towers
 end
 
 

@@ -26,9 +26,8 @@ function scene:createScene( event )
 	background:translate(0,0)
 	background:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
 
-	win = false
 
-	if win == true then
+	if event.params.win == true then
 		message = "You Win!"
 	else
 		message = "You Lose!"

@@ -1,6 +1,128 @@
 local storyboard = require "storyboard"
 local scene = storyboard.newScene()
 local widget = require "widget"
+local LoadBalancingClient
+local LoadBalancingConstants
+local Logger
+local tableutil
+local photon
+
+if pcall(require,"plugin.photon") then -- try to load Corona photon plugin
+    photon = require "plugin.photon"    
+    LoadBalancingClient = photon.loadbalancing.LoadBalancingClient
+    LoadBalancingConstants = photon.loadbalancing.constants
+    Logger = photon.common.Logger
+    tableutil = photon.common.util.tableutil
+else  -- or load photon.lua module
+    photon = require("photon")
+    LoadBalancingClient = require("photon.loadbalancing.LoadBalancingClient")
+    LoadBalancingConstants = require("photon.loadbalancing.constants")
+    Logger = require("photon.common.Logger")
+    tableutil = require("photon.common.util.tableutil")
+end
+
+math.randomseed(os.time())
+
+Constants = {
+    SendPath = 1,
+    SendTroops = 2,
+    GameResult = 3,
+    LogLevel = Logger.Level.INFO,
+}
+
+local appInfo = require("cloud-app-info")
+
+local function createClient()
+    local client = LoadBalancingClient.new(appInfo.MasterAddress, appInfo.AppId, appInfo.AppVersion)
+
+    -- connect to random room or create new one automatocally
+    -- close button click sets this to false
+    client.autoconnect = true
+
+    client.logger:info("Init", appInfo.MasterAddress, appInfo.AppId, appInfo.AppVersion)
+    client.logger:setPrefix("Game")
+    client:setLogLevel(Constants.LogLevel)
+    client:myActor():setName(math.floor(math.random() * 100))
+
+    function client:start()
+        self.winCondition = false
+        self:connect()
+        print(self:isConnectedToMaster())
+        print(self:isInLobby())
+    end
+
+    function client:service1()
+            self:service()
+        end
+
+    function client:onStateChange(state)
+            local info = nil
+            if state == LoadBalancingClient.State.Joined then
+                info =  self:myRoom().name
+            end
+
+            if state == LoadBalancingClient.State.JoinedLobby then
+                print("Joined Lobby, Joining Random Room")
+                if self.autoconnect then
+                    self:joinRandomRoom()
+                end
+            elseif state == LoadBalancingClient.State.Error then
+                self:reset(true)
+            end
+        end
+
+    function client:onJoinRoom()
+        self.logger:info("Joined Room: ", self:myRoom().name)
+        self.logger:info("onJoinRoom myRoom", self:myRoom())
+        self.logger:info("onJoinRoom myActor", self:myActor())
+        self.logger:info("onJoinRoom myRoomActors", self:myRoomActors())
+        
+    end
+
+
+    function client:onEvent(code, content, actorNr)
+            if code == Constants.SendPath then
+                client.params = content
+            elseif code == Constants.SendTroops then
+                client.spawnList = content
+            elseif code == Constants.GameResult then
+                client.winCondition = content[1]
+            end
+            self.logger:debug("Game: onEvent", code, "content:", content, "actor:", actorNr)
+        end
+
+   function client:onError(errorCode, errorMsg)
+    	if errorCode == LoadBalancingClient.PeerErrorCode.MasterAuthenticationFailed then
+    		errorMsg = errorMsg .. " with appId = " .. self.appId
+    	end
+        self.logger:error(errorCode, errorMsg)
+    end
+
+    function client:onOperationResponse(errorCode, errorMsg, code, content)
+        self.logger:info("onOperationResponse", errorCode, errorMsg, code, tableutil.toStringReq(content))
+        if errorCode ~= 0 then
+            if code == LoadBalancingConstants.OperationCode.JoinRandomGame then  -- master random room fail - try create
+                self.logger:info("createRoom")
+                self:createRoom("autochat")
+            end
+            if code == LoadBalancingConstants.OperationCode.CreateGame then -- master create room fail - try join random
+                self.logger:info("joinRandomRoom - 2")
+                self:joinRandomRoom()
+            end
+            if code == LoadBalancingConstants.OperationCode.JoinGame then -- game join room fail (probably removed while reconnected from master to game) - reconnect
+                self.logger:info("reconnect")
+                self:disconnect()
+            end
+        end
+    end
+
+    return client
+end
+
+local client = createClient()
+client:start()
+client:service1()
+timer.performWithDelay( 100, function() client:service1() end, 0)
 
 local function createButton(buttonLabel, release)
 	local button = widget.newButton{
@@ -49,26 +171,26 @@ end
 
 function scene:enterScene( event )
 	local group = self.view
-
+	
 	--networking code should go here
 	--when an opponent is found, transition to gameScreen
-
+	
+	client.params = {}
 
 	--If you are player one generate the path and send it to the other player
-	path = {}
-	height = 10
-	width = 20
-	pathSize = BuildPath(height,width,path)
-	print(pathSize)
-	local options = {
-		params = {
-			pathSend = path, sizeSend=pathSize
-		}
-	}
+	actorList = client:myRoomActors()
+	if(table.getn(actorList) == 1) then
+		path = {}
+		height = 10
+		width = 20
+		pathSize = BuildPath(height,width,path)
+		params = {pathSend = path, sizeSend=pathSize}
+		client.params = params
+		client:raiseEvent(Constants.SendPath, params, {receivers = LoadBalancingConstants.ReceiverGroup.Others})
+	end
+	table.insert(client.params, client)
+	local options = {client.params}
 	storyboard.gotoScene("gameScreen", options)
-
-
-
 end
 
 function scene:exitScene( event )

@@ -1,6 +1,25 @@
 local storyboard = require "storyboard"
 local scene = storyboard.newScene()
 local widget = require "widget"
+local LoadBalancingClient
+local LoadBalancingConstants
+local Logger
+local tableutil
+local photon
+
+if pcall(require,"plugin.photon") then -- try to load Corona photon plugin
+    photon = require "plugin.photon"    
+    LoadBalancingClient = photon.loadbalancing.LoadBalancingClient
+    LoadBalancingConstants = photon.loadbalancing.constants
+    Logger = photon.common.Logger
+    tableutil = photon.common.util.tableutil
+else  -- or load photon.lua module
+    photon = require("photon")
+    LoadBalancingClient = require("photon.loadbalancing.LoadBalancingClient")
+    LoadBalancingConstants = require("photon.loadbalancing.constants")
+    Logger = require("photon.common.Logger")
+    tableutil = require("photon.common.util.tableutil")
+end
 
 circles = display.newGroup()
 
@@ -41,7 +60,8 @@ local function finishButtonRelease()
 			spawnList = troopsBought
 		}
 	}
-		storyboard.gotoScene( "gameScreen", options )
+	client.raiseEvent(Constants.SendTroops, spawnList, {receivers = LoadBalancingConstants.ReceiverGroup.Others})
+	storyboard.gotoScene( "gameScreen", options )
 end
 
 function redTap(event)
@@ -146,6 +166,7 @@ end
 function scene:enterScene( event )
 	local group = self.view
 	troopsBought = {}
+	client = event.params.client
 	
 end
 
