@@ -322,10 +322,6 @@ function DrawPath(path, pathSize, grid)
 		grid[path[index].x][path[index].y].rect:removeEventListener("tap", ChangeColor)
 
 	end
-
-
-
-
 end
 
 
@@ -361,14 +357,15 @@ function MoveAllTroops()
 				TowersCanHit(troops[index])
 				transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y}) --move the guy
 			else --it is alive, and on the last cell
-				if health > 0  and troops[index].damaged ~= true then
-					troopFinishedMovingCount = troopFinishedMovingCount + 1
-					health = health - 10
-					troops[index].damaged = true
-					print(health .. " Base damaged!") -- damage the base
-					healthDisplay.text = health .. " HP"
+				if not troops[index].finished then
+				troopFinishedMovingCount = troopFinishedMovingCount + 1
+				troops[index].finished = true
+					if health > 0 then
+						health = health - 10
+						print(health .. " Base damaged!") -- damage the base
+						healthDisplay.text = health .. " HP"
+					end
 				end
-				
 			end
 
 		else --if it is dead
@@ -380,15 +377,13 @@ function MoveAllTroops()
 			end
 		end
 		if troopFinishedMovingCount  >= troopCount then -- if all have reached the end
-			troopFinishedMovingCount = troopCount
+			print(troopFinishedMovingCount.. "   ".. troopCount)
 			if RoundEnded == false then -- round ended
 				print("round ended")
 				coins = coins + 5
 				troopFinishedMovingCount = 0
 				RoundEnded = true
 			end
-
-			
 		end
 		coinsDisplay.text = coins .. " Coins" -- keep text field updated
 		local restart = function () -- next loop of troops
