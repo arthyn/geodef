@@ -17,6 +17,8 @@ end
 function quitButtonRelease()
 	troops = {}
 	troopCount = 0
+	timer.cancel( MoveTimer )
+	timer.cancel( spawnTimer )
 	storyboard.gotoScene("mainMenu")
 end
 
@@ -390,6 +392,13 @@ function MoveAllTroops()
 						health = health - 10
 						print(health .. " Base damaged!") -- damage the base
 						healthDisplay.text = health .. " HP"
+						if health == 0 then
+							timer.cancel( MoveTimer )
+							timer.cancel( spawnTimer )
+							local options = {params = {won = false}}
+							display.remove(gridGroup)
+							storyboard.gotoScene( "endScreen", options )
+						end
 					end
 				end
 			end
@@ -473,7 +482,7 @@ function GameLogic(spawnArray)
 		spawnCount = spawnCount + 1
 		return SpawnTroop(spawnArray[spawnCount])
 	end
-	timer.performWithDelay( 500 , spawnFunctionTimer, table.getn(spawnArray) )
+	spawnTimer = timer.performWithDelay( 500 , spawnFunctionTimer, table.getn(spawnArray) )
 	MoveTimer = timer.performWithDelay( 550 , MoveAllTroops, table.getn(spawnArray) + pathSize - 1)
 
 	-- add funtion to shoot at the troops with a cool down of 1 second. 
