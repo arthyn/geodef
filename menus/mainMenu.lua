@@ -55,7 +55,7 @@ local function multiplayerButtonRelease()
 			pathSend = path, sizeSend=pathSize
 		}
 	}
-	storyboard.gotoScene("gameScreen", options)
+	storyboard.gotoScene("newGame", options)
 	return true
 end
 
