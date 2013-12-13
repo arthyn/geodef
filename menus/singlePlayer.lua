@@ -89,12 +89,23 @@ end
 
 function scene:exitScene( event )
 	local group = self.view
+<<<<<<< HEAD
 		if moveTimerON == true then
 		timer.cancel( MoveTimer )
 	end
 		if spawnTimerON == true then
 		timer.cancel( spawnTimer )
 	end
+=======
+        if movetimer ~= nill then
+            timer.cancel( MoveTimer )
+        end
+
+        if spawnTimer ~= nill then
+            timer.cancel( spawnTimer )
+        end
+
+>>>>>>> 93ee6d05df3da6558645f956fde104adde3fe0a9
 	display.remove( gridGroup )
 	
 end
