@@ -1,6 +1,7 @@
 local storyboard = require "storyboard"
 local scene = storyboard.newScene()
 local widget = require "widget"
+roundStart = false
 local function createButton(buttonLabel, release)
 	local button = widget.newButton{
 		label = buttonLabel,
@@ -22,6 +23,14 @@ function quitButtonRelease()
 	storyboard.gotoScene("mainMenu")
 end
 
+function startButtonRelease()
+	roundStart = true
+	GameLogic(spawnList)
+	display.remove(startButton)
+
+
+	end
+
 function scene:createScene( event )
 	local group = self.view
 
@@ -32,6 +41,10 @@ function scene:createScene( event )
 	quitButton.x = display.contentWidth * (.15)
 	quitButton.y = display.contentHeight * (.9)
 
+	startButton = createButton("Start Round", startButtonRelease)
+	startButton.x = display.contentWidth * (.85)
+	startButton.y = display.contentHeight * (.9)
+
 	healthDisplay = display.newText(health .. " HP", 0, 0, native.systemFont, 40)
 	healthDisplay.x = display.contentWidth * (.3)
 	healthDisplay.y = display.contentHeight * (.9)
@@ -41,8 +54,10 @@ function scene:createScene( event )
 	coinsDisplay.y = display.contentHeight * (.9)
 
 	group:insert(quitButton)
+	group:insert(startButton)
 	group:insert(coinsDisplay)
 	group:insert(healthDisplay)
+
 
 end
 
@@ -467,6 +482,7 @@ function MoveAllTroopsToEnd()
 end
 
 function GameLogic(spawnArray)
+	if roundStart == true then
 	--Take in array of troops to spawn, spawn one, move it, spawn another, move it
 	RoundEnded = false
 	--for num = 1, table.getn(spawnArray) do
@@ -484,6 +500,8 @@ function GameLogic(spawnArray)
 	end
 	spawnTimer = timer.performWithDelay( 500 , spawnFunctionTimer, table.getn(spawnArray) )
 	MoveTimer = timer.performWithDelay( 550 , MoveAllTroops, table.getn(spawnArray) + pathSize - 1)
+
+	end
 
 	-- add funtion to shoot at the troops with a cool down of 1 second. 
 
