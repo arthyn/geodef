@@ -93,7 +93,7 @@ function checkJumpBack( )
 								networkSend = network1
 							}
 						}
-		network1:raiseEvent(Constants.SendTroops, troops, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
+	--	network1:raiseEvent(Constants.SendTroops, troops, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
 		network1:service()
 
 		storyboard.gotoScene( "gameScreen", options )
