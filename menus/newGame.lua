@@ -43,7 +43,8 @@ local function createButton(buttonLabel, release)
 		fontSize = 30,
 		width = 300,
 		height = 100,
-		onRelease = release
+		onRelease = release,
+		defaultFile = "button.png"
 	}
 	return button
 end
@@ -56,17 +57,29 @@ end
 function scene:createScene( event )
 	local group = self.view
 
-	local bg = display.newRect( 0, 0, display.contentWidth, display.contentHeight)
-	bg:setFillColor(197, 197, 197)
+	local background = display.newImage( "wallpaper.png")
+	background:translate(0,0)
+	background:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
 
+	background:scale(1602/display.contentWidth, 1) 
+
+	local logo = display.newImage( "logo.png")
+	logo:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
+	logo:scale(1.5,1.5 ) 
+
+
+	logo:translate(0,0)
+	logo.x = display.contentWidth * .5
+	logo.y = display.contentHeight * (4/14)
+	
 
 	network1 = createClient()
 
 	network1:connect()
 
 	spinner = widget.newSpinner{
-		top = display.contentHeight * (2/8),
-		left = display.contentWidth * (.5),
+		top = display.contentHeight * (3/5),
+		left = display.contentWidth * .49,
 		time = 10000
 	}
 	
@@ -81,7 +94,7 @@ function scene:createScene( event )
 	cancelButton.x = display.contentWidth * (.5)
 	cancelButton.y = display.contentHeight * (6/8)
 
-	group:insert(bg)
+	group:insert(background)
 	group:insert(spinner)
 	group:insert(waiting)
 	group:insert(cancelButton)
