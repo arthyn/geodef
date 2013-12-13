@@ -555,6 +555,7 @@ function checkResult()
 		network1:service()
 	else
 		local options = {params = {won = true}}
+		timer.cancel( winCheck )
 		storyboard.gotoScene("endScreen", options)
 	end
 end
