@@ -87,6 +87,9 @@ function checkJumpBack( )
 								networkSend = network1
 							}
 						}
+		local troops = {
+			spawnList = troopsBought
+		}		
 		network1:raiseEvent(Constants.SendTroops, troops, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
 		network1:service()
 
