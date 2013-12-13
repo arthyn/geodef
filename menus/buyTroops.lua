@@ -141,7 +141,7 @@ function drawTroopList()
 	local size = table.maxn( troopsBought )
 	for i=1,size do
 		circle = display.newCircle(display.contentWidth * (i/size) - 30,
-			display.contentHeight * (.5), 10)
+			display.contentHeight * (.5), 30)
 		if troopsBought[i] == "red" then
 			circle:setFillColor(255, 0, 0)
 		elseif troopsBought[i] == "green" then
@@ -206,8 +206,9 @@ end
 
 function scene:enterScene( event )
 	local group = self.view
-	
+	network1.troops = {}
 	troopsBought = {}
+
 	
 end
 
