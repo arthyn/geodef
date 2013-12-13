@@ -63,6 +63,9 @@ local function backButtonRelease()
 end
 
 local function finishButtonRelease()
+	if spawnList == nil then
+		return
+	end
 	local troops = {
 			spawnList = troopsBought
 		}
