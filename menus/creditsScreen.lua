@@ -30,7 +30,7 @@ function scene:createScene( event )
 	name.x = display.contentWidth * .5
 	name.y = display.contentHeight * (4/13)
 
-	local text = display.newText(" ~ MICAH RIGGAN ~ STEPHEN ROTEN \n ~ ANGELOS PILLOS ~ JAMIE JUNEAU \n ~ RAYMOND REED ~ ZACK THEVENOT \n ~ RYAN HALEY ~ HUNTER MILLER \n ~ TRAVIS DEROUEN ", display.contentWidth/5, display.contentHeight/2.3, display.contentWidth, display.contentHeight, native.systemFont, 40)
+	local text = display.newText(" ~ MICAH RIGGAN ~ STEPHEN ROTEN \n ~ ANGELOS PILLOS ~ JAMIE JUNEAU \n ~ RAYMOND REED ~ ZACK THEVENOT \n ~ RYAN HALEY ~ HUNTER MILLER \n ~ PATRICK PONSETI ~ TRAVIS DEROUEN ", display.contentWidth/5, display.contentHeight/2.3, display.contentWidth, display.contentHeight, native.systemFont, 40)
 
 	local backButton = createButton("Back", backButtonRelease)
 	backButton.x = display.contentWidth * (.5)
