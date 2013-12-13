@@ -523,6 +523,7 @@ function MoveAllTroops()
 				local options = {params = {won = false}}
 				--MoveAllTroopsToEnd()
 				display.remove(gridGroup)
+				network1:raiseEvent(Constants.GameResult, {true}, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
 				storyboard.gotoScene( "endScreen", options ) --game over
 
 			
