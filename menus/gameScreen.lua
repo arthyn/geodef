@@ -506,6 +506,7 @@ function MoveAllTroops()
 				coins = coins + 5
 				troopFinishedMovingCount = 0
 				RoundEnded = true
+				troops = {}
 				troopsButton:setEnabled(true)
 			end
 		end
