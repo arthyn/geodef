@@ -2,6 +2,8 @@ local storyboard = require "storyboard"
 local scene = storyboard.newScene()
 local widget = require "widget"
 roundStart = false
+moveTimerON = false
+spawnTimerON = false
 local function createButton(buttonLabel, release)
 	local button = widget.newButton{
 		label = buttonLabel,
@@ -87,8 +89,12 @@ end
 
 function scene:exitScene( event )
 	local group = self.view
+		if moveTimerON == true then
 		timer.cancel( MoveTimer )
+	end
+		if spawnTimerON == true then
 		timer.cancel( spawnTimer )
+	end
 	display.remove( gridGroup )
 	
 end
@@ -336,12 +342,13 @@ function BuildPath(height, width, path)
 		
 		direction = math.random(0, 2)
 	end
-	if count < (height * width)/4 then  --if it doesn't use at least 1/3 of the grid
+--[[	if count < (height * width)/4 then  --if it doesn't use at least 1/3 of the grid
 		for index = 0, count-1 do
 			table.remove( path )
 		end
 		BuildPath(height,width,path) --rebuild path
 	end
+	]]
 	return count
 	
 end
@@ -485,7 +492,7 @@ function GameLogic(spawnArray)
 	--for num = 1, table.getn(spawnArray) d	--	move = function() return MoveTroop(num-1) end
 	--	timers[num] = timer.performWithDelay(500 , move, pathSize-1)
 	--end
-	--troops = {}
+	troops = {}
 	troopCount = 0
 	spawnCount = 0
 	troopFinishedMovingCount = 0
@@ -495,7 +502,8 @@ function GameLogic(spawnArray)
 	end
 	spawnTimer = timer.performWithDelay( 500 , spawnFunctionTimer, table.getn(spawnArray) )
 	MoveTimer = timer.performWithDelay( 550 , MoveAllTroops, table.getn(spawnArray) + pathSize - 1)
-
+	spawnTimerON = true
+	moveTimerON = true
 	-- add funtion to shoot at the troops with a cool down of 1 second. 
 
 
