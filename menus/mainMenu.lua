@@ -72,12 +72,17 @@ function scene:createScene( event )
 	local background = display.newImage( "wallpaper.png")
 	background:translate(0,0)
 	background:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
-	print(display.contentWidth)
-	print(display.contentHeight)
+
 	background:scale(1602/display.contentWidth, 1) 
 
 	local logo = display.newImage( "logo.png")
+	logo:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
+	logo:scale(1.5,1.5 ) 
+
+
 	logo:translate(0,0)
+	logo.x = display.contentWidth * .5
+	logo.y = display.contentHeight * (4/14)
 	
 
 	--local name = display.newText("geodef", 0, 0, native.systemFont, 100)

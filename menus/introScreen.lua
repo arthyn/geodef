@@ -27,17 +27,29 @@ function scene:createScene( event )
 
 	local background = display.newImage( "wallpaper.png")
 	background:translate(0,0)
+	background:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
 
-	local name = display.newText("geodef", 0, 0, native.systemFont, 200)
-	name.x = display.contentWidth * .5
-	name.y = display.contentHeight * .4
+	background:scale(1602/display.contentWidth, 1) 
+
+
+	local logo = display.newImage( "logo.png")
+	logo:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
+	logo:scale(3,3) 
+
+
+	logo:translate(0,0)
+	logo.x = display.contentWidth * .5
+	logo.y = display.contentHeight * (4/12)
+	--local name = display.newText("geodef", 0, 0, native.systemFont, 200)
+	--name.x = display.contentWidth * .5
+	--name.y = display.contentHeight * .4
 
 	local backButton = createButton("PLAY!", backButtonRelease)
 	backButton.x = display.contentWidth * (.5)
 	backButton.y = display.contentHeight * (.7)
 
 	group:insert(background)
-	group:insert(name)
+	group:insert(logo)
 	group:insert(backButton)
 
 end

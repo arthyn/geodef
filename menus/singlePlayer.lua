@@ -16,15 +16,10 @@ local function createButton(buttonLabel, release)
 end
 
 function quitButtonRelease()
-	troops = {}
-	troopCount = 0
-	timer.cancel( MoveTimer )
-	timer.cancel( spawnTimer )
 	storyboard.gotoScene("mainMenu")
 end
 
 function startButtonRelease()
-	roundStart = true
 	GameLogic(spawnList)
 	display.remove(startButton)
 
@@ -63,22 +58,20 @@ end
 
 function scene:enterScene( event )
 	local group = self.view
+	roundCount = 1
 	path = event.params.pathSend
 	pathSize = event.params.sizeSend
 	gridGroup = display.newGroup()
-	if event.params.towerSend == nil then
-		print("Entry from first screen")
-		
-		towers = {} --this is a list of all the towers 0 represents no tower, 1,2,3 represents color
+		-- troops = {}
+		 towers = {} --this is a list of all the towers 0 represents no tower, 1,2,3 represents color
 		grid = {} --this is a list of squares
 		towerCount = 0 --keep track of how many towers you have
 		
 		BuildGrid(points,grid,height,width)
-	end
 		DrawPath(path,pathSize,grid)
 
 	spawnList = {}
-	for i=1,10 do
+	for i=1,math.random(3,5) do
 		temp = math.random(1,3)
 		if temp==1 then
 			spawnList[i] = "red"
@@ -89,11 +82,13 @@ function scene:enterScene( event )
 		end
 	end
 
-	GameLogic(spawnList)
+	--GameLogic(spawnList)]]
 end
 
 function scene:exitScene( event )
 	local group = self.view
+		timer.cancel( MoveTimer )
+		timer.cancel( spawnTimer )
 	display.remove( gridGroup )
 	
 end
@@ -139,7 +134,7 @@ function ChangeColor(event)
 		event.target:setFillColor(55,125,35)
 		event.target.strokeWidth = 2
 		event.target:setStrokeColor(170,85,187)
-	else
+	elseif event.target.color =="green" then
 		event.target.color = "none"
 		grid[event.target.xPos][event.target.yPos].color = "none"
 		event.target:setFillColor(0,0,0,0)
@@ -365,6 +360,7 @@ end
 function SpawnTroop(color)
 	-- Spawns troops on the first cell of the path
 	-- could change the path index to spawn on another cell
+		print("spawn troop")
 		troops[troopCount] = {}
 		troops[troopCount] = display.newCircle( gridGroup, grid[path[0].x][path[0].y].rect.x, grid[path[0].x][path[0].y].rect.y, 10 )
 		troops[troopCount].hp = 100
@@ -392,6 +388,7 @@ function SpawnTroop(color)
 end
 
 function MoveAllTroops()
+	print("moving troops")
 	for index = 0, table.getn(troops) do -- loop through all spawned troops
 		if troops[index].hp > 0  then --if troop is alive
 		 	if troops[index].location ~= pathSize - 1 then -- and if its not on the last cell
@@ -407,7 +404,7 @@ function MoveAllTroops()
 						health = health - 10
 						print(health .. " Base damaged!") -- damage the base
 						healthDisplay.text = health .. " HP"
-						if health == 0 then
+						if health <= 0 then
 							timer.cancel( MoveTimer )
 							timer.cancel( spawnTimer )
 							local options = {params = {won = false}}
@@ -426,7 +423,7 @@ function MoveAllTroops()
 				transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y}) --move the guy
 			end
 		end
-		if troopFinishedMovingCount  >= troopCount then -- if all have reached the end
+		if troopFinishedMovingCount  == troopCount then -- if all have reached the end
 			print(troopFinishedMovingCount.. "   ".. troopCount)
 			if RoundEnded == false then -- round ended
 				print("round ended")
@@ -441,7 +438,8 @@ function MoveAllTroops()
 			troopCount = 0
 			troopFinishedMovingCount = 0
 			spawnList = {}
-			for i=1, coins do
+			roundCount = roundCount + 1
+			for i=1, math.random(roundCount*2, roundCount*4) do
 				temp = math.random(1,3)
 				if temp==1 then
 					spawnList[i] = "red"
@@ -482,15 +480,12 @@ function MoveAllTroopsToEnd()
 end
 
 function GameLogic(spawnArray)
-	if roundStart == true then
 	--Take in array of troops to spawn, spawn one, move it, spawn another, move it
 	RoundEnded = false
-	--for num = 1, table.getn(spawnArray) do
-	--	SpawnTroop(spawnArray[num])
-	--	move = function() return MoveTroop(num-1) end
+	--for num = 1, table.getn(spawnArray) d	--	move = function() return MoveTroop(num-1) end
 	--	timers[num] = timer.performWithDelay(500 , move, pathSize-1)
 	--end
-	troops = {}
+	--troops = {}
 	troopCount = 0
 	spawnCount = 0
 	troopFinishedMovingCount = 0
@@ -500,8 +495,6 @@ function GameLogic(spawnArray)
 	end
 	spawnTimer = timer.performWithDelay( 500 , spawnFunctionTimer, table.getn(spawnArray) )
 	MoveTimer = timer.performWithDelay( 550 , MoveAllTroops, table.getn(spawnArray) + pathSize - 1)
-
-	end
 
 	-- add funtion to shoot at the troops with a cool down of 1 second. 
 
