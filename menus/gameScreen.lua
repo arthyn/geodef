@@ -51,7 +51,7 @@ end
 
 function quitButtonRelease()
 	network1:leaveRoom()
-	network1:disconnect()
+	network1:Disconnect()
 	storyboard.gotoScene("mainMenu")
 end
 
@@ -531,7 +531,7 @@ function MoveAllTroops()
 				network1:raiseEvent(Constants.GameResult, {true}, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
 				network1:service()
 				network1:leaveRoom()
-				network1:disconnect()
+				network1:Disconnect()
 				storyboard.gotoScene( "endScreen", options ) --game over
 
 			
