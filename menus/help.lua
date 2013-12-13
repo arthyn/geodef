@@ -26,11 +26,18 @@ function scene:createScene( event )
 	background:translate(0,0)
 	background:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
 
-	local name = display.newText("geodef", 0, 0, native.systemFont, 100)
-	name.x = display.contentWidth * .5
-	name.y = display.contentHeight * (4/13)
+	--local name = display.newText("geodef", 0, 0, native.systemFont, 100)
+	--name.x = display.contentWidth * .5
+	--name.y = display.contentHeight * (4/13)
 
-	local text = display.newText(" ~ Tap to place the default tower type \n ~ Keep taping to change tower type \n ~ Each tower type damages more the same type troops \n ~ If troops reach the end they damage health \n ~ When there is no health the gamer lases \n ~ In single player you win according to rounds \n ~ In multi player you win when the oppents destroyed ", display.contentWidth/5, display.contentHeight/2.3, display.contentWidth, display.contentHeight, native.systemFont, 30)
+	local logo = display.newImage( "logo.png")
+	logo:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
+	logo:scale(1.5,1.5 ) 
+	logo:translate(0,0)
+	logo.x = display.contentWidth * .5
+	logo.y = display.contentHeight * (4/14)
+	
+	local text = display.newText(" ~ Tap to place the default tower type \n ~ Keep taping to change tower type \n ~ Towers do more damage to same type troops \n ~ Troops reduce health if they reach the base \n ~ Player loses when they run out of health \n ~ In multiplayer, you win when opponent loses \n ~ In single player, you play until you lose ", display.contentWidth/5, display.contentHeight/2.3, display.contentWidth, display.contentHeight, native.systemFont, 30)
 
 	local backButton = createButton("Back", backButtonRelease)
 	backButton.x = display.contentWidth * (.5)
@@ -39,7 +46,7 @@ function scene:createScene( event )
 	group:insert(background)
 	group:insert(text)
 	group:insert(backButton)
-	group:insert(name)
+	group:insert(logo)
 
 end
 
