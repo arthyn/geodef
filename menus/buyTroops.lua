@@ -67,7 +67,7 @@ local function backButtonRelease()
 end
 
 function checkJumpBack( )
-{
+	
 	if(table.getn(network1.troops) == 0)
 		network1:service()
 	else
@@ -90,7 +90,7 @@ function checkJumpBack( )
 
 		storyboard.gotoScene( "gameScreen", options )
 	end
-}
+end
 
 local function finishButtonRelease()
 	
