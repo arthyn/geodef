@@ -70,15 +70,6 @@ function checkJumpBack( )
 
 	if(table.getn(network1.troops) == 0) then
 		network1:service()
-<<<<<<< HEAD
-
-	local troops = {
-			spawnList = troopsBought
-		}
-
-		network1:raiseEvent(Constants.SendTroops, {troopsBought}, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
-=======
->>>>>>> parent of 8a3df29... retry
 	else
 		timer.cancel(jumpBack)
 
@@ -96,7 +87,7 @@ function checkJumpBack( )
 								networkSend = network1
 							}
 						}
-	--	network1:raiseEvent(Constants.SendTroops, troops, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
+		network1:raiseEvent(Constants.SendTroops, troops, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
 		network1:service()
 
 		storyboard.gotoScene( "gameScreen", options )
