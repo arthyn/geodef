@@ -42,9 +42,10 @@ local function createButton(buttonLabel, release)
 		label = buttonLabel,
 		labelColor = { default={255}, over={128} },
 		fontSize = 30,
-		width = 200,
-		height = 75,
-		onRelease = release
+		width = 300,
+		height = 100,
+		onRelease = release,
+		defaultFile = "button.png"
 	}
 	return button
 end

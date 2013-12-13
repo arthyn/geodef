@@ -40,10 +40,11 @@ local function createButton(buttonLabel, release)
 	local button = widget.newButton{
 		label = buttonLabel,
 		labelColor = { default={255}, over={128} },
-		fontSize = 20,
-		width = 150,
-		height = 60,
-		onRelease = release
+		fontSize = 30,
+		width = 300,
+		height = 100,
+		onRelease = release,
+		defaultFile = "button.png"
 	}
 	return button
 end
