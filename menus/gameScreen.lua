@@ -262,7 +262,7 @@ function reBuildGrid(copiedGrid, height, width)
 				rectangle:setFillColor(0,0,255)
 				rectangle.strokeWidth = 2
 				rectangle:setStrokeColor(255,255,0)
-			elseif event.target.color =="green" then 
+			elseif rectangle.color =="green" then 
 				rectangle.color = "none"
 				rectangle:setFillColor(0,0,0,0)
 			rectangle.strokeWidth = 1
