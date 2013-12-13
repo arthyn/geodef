@@ -66,7 +66,7 @@ local function backButtonRelease()
 	storyboard.gotoScene( "gameScreen", options )
 end
 
-function g( )
+function checkJumpBack( )
 {
 	if(table.getn(network1.troops) == 0)
 		network1:service()
@@ -103,7 +103,7 @@ local function finishButtonRelease()
 	network1:raiseEvent(Constants.SendTroops, troops, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
 	network1:service()
 
-	jumpBack = timer.performWithDelay( 500, g, 0)
+	jumpBack = timer.performWithDelay( 500, checkJumpBack, 0)
 
 	-- while(table.getn(network1.troops) == 0) do
 	-- 	network1:service()
