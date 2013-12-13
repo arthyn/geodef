@@ -67,8 +67,8 @@ local function backButtonRelease()
 end
 
 function checkJumpBack( )
-	
-	if(table.getn(network1.troops) == 0)
+
+	if(table.getn(network1.troops) == 0) then
 		network1:service()
 	else
 		timer.cancel(jumpBack)
