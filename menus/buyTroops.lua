@@ -67,9 +67,7 @@ local function backButtonRelease()
 end
 
 local function finishButtonRelease()
-	if troopsBought == nil then
-		return
-	end
+	
 	local troops = {
 			spawnList = troopsBought
 		}
@@ -103,6 +101,7 @@ end
 
 function redTap(event)
 	if coins > 0 then
+		finishButton:setEnabled(true)
 		table.insert( troopsBought, "red" )
 		coins = coins - 1 
 		coinsDisplay.text = coins .. " Coins"
@@ -112,6 +111,7 @@ end
 
 function blueTap(event)
 	if coins > 0 then
+		finishButton:setEnabled(true)
 		table.insert( troopsBought, "blue" )
 		coins = coins - 1
 		coinsDisplay.text = coins .. " Coins"
@@ -121,6 +121,7 @@ end
 
 function greenTap(event)
 	if coins > 0 then
+		finishButton:setEnabled(true)
 		table.insert( troopsBought, "green")
 		coins = coins - 1
 		coinsDisplay.text = coins .. " Coins"
@@ -132,6 +133,7 @@ function smallCircleTap(event)
 	table.remove( troopsBought, event.target.index )
 	coins = coins + 1
 	coinsDisplay.text = coins .. " Coins"
+	if(table.getn(troopsBought) == 0)
 	drawTroopList()
 end
 
@@ -207,6 +209,7 @@ end
 function scene:enterScene( event )
 	local group = self.view
 	network1.troops = {}
+	finishButton:setEnabled(false)
 	troopsBought = {}
 
 	
