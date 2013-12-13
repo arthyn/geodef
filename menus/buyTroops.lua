@@ -191,11 +191,11 @@ function scene:createScene( event )
 	coinsDisplay.x = display.contentWidth * (.5)
 	coinsDisplay.y = display.contentHeight * (.8)
 
-	local backButton = createButton("Back", backButtonRelease)
+	backButton = createButton("Back", backButtonRelease)
 	backButton.x = display.contentWidth * (.15)
 	backButton.y = display.contentHeight * (.8)
 
-	local finishButton = createButton("Attack!", finishButtonRelease)
+	finishButton = createButton("Attack!", finishButtonRelease)
 	finishButton.x = display.contentWidth * (.85)
 	finishButton.y = display.contentHeight * (.8)
 
