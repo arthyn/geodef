@@ -203,7 +203,7 @@ function ChangeColor(event)
 		event.target:setFillColor(55,125,35)
 		event.target.strokeWidth = 2
 		event.target:setStrokeColor(170,85,187)
-	else
+	elseif event.target.color == "green" then
 		event.target.color = "none"
 		grid[event.target.xPos][event.target.yPos].color = "none"
 		event.target:setFillColor(0,0,0,0)
