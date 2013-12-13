@@ -66,6 +66,32 @@ local function backButtonRelease()
 	storyboard.gotoScene( "gameScreen", options )
 end
 
+function g( )
+{
+	if(table.getn(network1.troops) == 0)
+		network1:service()
+	else
+		timer.cancel(jumpBack)
+
+		print("sending path size " .. pathSize)
+		local options = {
+							params = {
+								pathSend = path,
+								hpSend = health,
+								pathSizeSend = pathSize,
+								coinSend = coins,
+								gridSend = grid,
+								towerSend = towers,
+								roundCountSend = roundCount,
+								spawnList = network1.troops,
+								networkSend = network1
+							}
+						}
+
+		storyboard.gotoScene( "gameScreen", options )
+	end
+}
+
 local function finishButtonRelease()
 	
 	local troops = {
@@ -77,26 +103,28 @@ local function finishButtonRelease()
 	network1:raiseEvent(Constants.SendTroops, troops, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
 	network1:service()
 
-	while(table.getn(network1.troops) == 0) do
-		network1:service()
-		socket.sleep(5)
-	end
-	print("sending path size " .. pathSize)
-	local options = {
-		params = {
-			pathSend = path,
-			hpSend = health,
-			pathSizeSend = pathSize,
-			coinSend = coins,
-			gridSend = grid,
-			towerSend = towers,
-			roundCountSend = roundCount,
-			spawnList = network1.troops,
-			networkSend = network1
-		}
-	}
+	jumpBack = timer.performWithDelay( 500, g, 0)
 
-	storyboard.gotoScene( "gameScreen", options )
+	-- while(table.getn(network1.troops) == 0) do
+	-- 	network1:service()
+	-- 	socket.sleep(5)
+	-- end
+	-- print("sending path size " .. pathSize)
+	-- local options = {
+	-- 	params = {
+	-- 		pathSend = path,
+	-- 		hpSend = health,
+	-- 		pathSizeSend = pathSize,
+	-- 		coinSend = coins,
+	-- 		gridSend = grid,
+	-- 		towerSend = towers,
+	-- 		roundCountSend = roundCount,
+	-- 		spawnList = network1.troops,
+	-- 		networkSend = network1
+	-- 	}
+	-- }
+
+	-- storyboard.gotoScene( "gameScreen", options )
 end
 
 function redTap(event)
