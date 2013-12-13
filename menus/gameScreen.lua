@@ -50,6 +50,7 @@ local function createButton(buttonLabel, release)
 end
 
 function quitButtonRelease()
+	network1:leaveRoom()
 	storyboard.gotoScene("mainMenu")
 end
 
