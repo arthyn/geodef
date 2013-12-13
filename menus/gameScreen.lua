@@ -465,27 +465,29 @@ end
 
 function MoveAllTroops()
 	print("moving troops")
-	for index = 0, table.getn(troops) - 1 do -- loop through all spawned troops
-		if troops[index].hp > 0  then --if troop is alive
-		 	if troops[index].location ~= pathSize - 1 then -- and if its not on the last cell
-				troops[index].location = troops[index].location + 1 --move a troop to the next cell
-				current = troops[index].location
-				TowersCanHit(troops[index])
-				transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y, alpha = troops[index].hp/troops[index].maxhp}) --move the guy
-			else --it is alive, and on the last cell
-				if not troops[index].finished then
-				troopFinishedMovingCount = troopFinishedMovingCount + 1
-				troops[index].finished = true
-					if health > 0 then
-						health = health - 10
-						print(health .. " Base damaged!") -- damage the base
-						healthDisplay.text = health .. " HP"
-						if health <= 0 then
-							timer.cancel( MoveTimer )
-							timer.cancel( spawnTimer )
-							local options = {params = {won = false}}
-							display.remove(gridGroup)
-							storyboard.gotoScene( "endScreen", options )
+	for index = 0, table.getn(troops) do -- loop through all spawned troops
+		if table.getn(troops) ~= 0 then
+			if troops[index].hp > 0  then --if troop is alive
+			 	if troops[index].location ~= pathSize - 1 then -- and if its not on the last cell
+					troops[index].location = troops[index].location + 1 --move a troop to the next cell
+					current = troops[index].location
+					TowersCanHit(troops[index])
+					transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y, alpha = troops[index].hp/troops[index].maxhp}) --move the guy
+				else --it is alive, and on the last cell
+					if not troops[index].finished then
+					troopFinishedMovingCount = troopFinishedMovingCount + 1
+					troops[index].finished = true
+						if health > 0 then
+							health = health - 10
+							print(health .. " Base damaged!") -- damage the base
+							healthDisplay.text = health .. " HP"
+							if health <= 0 then
+								timer.cancel( MoveTimer )
+								timer.cancel( spawnTimer )
+								local options = {params = {won = false}}
+								display.remove(gridGroup)
+								storyboard.gotoScene( "endScreen", options )
+							end
 						end
 					end
 				end
