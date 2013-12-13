@@ -244,6 +244,7 @@ function reBuildGrid(copiedGrid, height, width)
 			rectangle:setFillColor(0,0,0,0)
 			rectangle.strokeWidth = 1
 			rectangle:setStrokeColor(255,255,255, 25)
+			rectangle.coolDown = 0
 			rectangle.color = copiedGrid[x][y].rect.color
 			rectangle.xPos = x
 			rectangle.yPos = y
@@ -508,26 +509,6 @@ function MoveAllTroops()
 			end
 		end
 		coinsDisplay.text = coins .. " Coins" -- keep text field updated
-		local restart = function () -- next loop of troops
-			troops = {}
-			troopCount = 0
-			troopFinishedMovingCount = 0
-			spawnList = {}
-			
-
-			for i=1, math.random(roundCount*2, roundCount*4) do
-				temp = math.random(1,3)
-				if temp==1 then
-					spawnList[i] = "red"
-				elseif temp == 2 then
-					spawnList[i] = "green"
-				elseif temp == 3 then
-					spawnList[i] = "blue"
-				end
-			end
-			print("Game Restarted")
-			GameLogic(spawnList)
-		end
 		if index == troopCount - 1 and RoundEnded == true  then
 
 			if health <= 0 then 
@@ -544,7 +525,6 @@ function MoveAllTroops()
 				--MoveAllTroopsToEnd()
 				roundCount = roundCount + 1
 				roundDisplay.text = "Round " .. roundCount
-				timer.performWithDelay( 10000, restart, 1)
 			end
 		end
 	end
