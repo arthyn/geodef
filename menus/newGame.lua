@@ -95,6 +95,7 @@ function scene:createScene( event )
 	cancelButton.y = display.contentHeight * (6/8)
 
 	group:insert(background)
+	group:insert(logo)
 	group:insert(spinner)
 	group:insert(waiting)
 	group:insert(cancelButton)
