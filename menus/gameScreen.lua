@@ -1,7 +1,9 @@
 local storyboard = require "storyboard"
 local scene = storyboard.newScene()
 local widget = require "widget"
-
+roundStart = false
+moveTimerON = false
+spawnTimerON = false
 local LoadBalancingClient
 local LoadBalancingConstants
 local tableutil
@@ -67,7 +69,7 @@ end
 
 function scene:createScene( event )
 	local group = self.view
-
+	roundCount = 1
 	coins = 10
 	health = 100 --decrease this when a troop makes it to your base
 	local quitButton = createButton("Quit", quitButtonRelease)
@@ -82,6 +84,10 @@ function scene:createScene( event )
 	healthDisplay.x = display.contentWidth * (.3)
 	healthDisplay.y = display.contentHeight * (.9)
 
+	roundDisplay = display.newText("Round " .. roundCount, 0, 0, native.systemFont, 40)
+	roundDisplay.x = display.contentWidth * (.5)
+	roundDisplay.y = display.contentHeight * (.9)
+
 	coinsDisplay = display.newText(coins.. " Coins", 0, 0, native.systemFont, 40)
 	coinsDisplay.x = display.contentWidth * (.7)
 	coinsDisplay.y = display.contentHeight * (.9)
@@ -90,6 +96,7 @@ function scene:createScene( event )
 	group:insert(troopsButton)
 	group:insert(coinsDisplay)
 	group:insert(healthDisplay)
+	group:insert(roundDisplay)
 
 end
 
@@ -140,6 +147,12 @@ end
 
 function scene:exitScene( event )
 	local group = self.view
+		if moveTimerON == true then
+		timer.cancel( MoveTimer )
+	end
+		if spawnTimerON == true then
+		timer.cancel( spawnTimer )
+	end
 	display.remove( gridGroup )
 	
 end
@@ -249,7 +262,7 @@ function reBuildGrid(copiedGrid, height, width)
 				rectangle:setFillColor(0,0,255)
 				rectangle.strokeWidth = 2
 				rectangle:setStrokeColor(255,255,0)
-			else 
+			elseif event.target.color =="green" then 
 				rectangle.color = "none"
 				rectangle:setFillColor(0,0,0,0)
 			rectangle.strokeWidth = 1
@@ -444,65 +457,119 @@ function SpawnTroop(color)
 end
 
 
-function MoveTroop(index)
-	if troops[index].hp > 0  then
-		troops[index].location = troops[index].location + 1 --move a troop to the next cell
-		current = troops[index].location
-		TowersCanHit(troops[index])
-		--if next cell isnt the end
-		if current == pathSize-1 then 
-			
-			troopFinishedMovingCount = troopFinishedMovingCount + 1
-			--print(troopFinishedMovingCount .. "==" .. troopCount)
-			if troopFinishedMovingCount + 1 == troopCount then
-				troopsButton:setEnabled(true)
-				timer.cancel( timers[index + 1] )
-				if RoundEnded == false then
-					coins = coins + 5
-					RoundEnded = true
-
+function MoveAllTroops()
+	print("moving troops")
+	for index = 0, table.getn(troops) do -- loop through all spawned troops
+		if troops[index].hp > 0  then --if troop is alive
+		 	if troops[index].location ~= pathSize - 1 then -- and if its not on the last cell
+				troops[index].location = troops[index].location + 1 --move a troop to the next cell
+				current = troops[index].location
+				TowersCanHit(troops[index])
+				transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y, alpha = troops[index].hp/troops[index].maxhp}) --move the guy
+			else --it is alive, and on the last cell
+				if not troops[index].finished then
+				troopFinishedMovingCount = troopFinishedMovingCount + 1
+				troops[index].finished = true
+					if health > 0 then
+						health = health - 10
+						print(health .. " Base damaged!") -- damage the base
+						healthDisplay.text = health .. " HP"
+						if health <= 0 then
+							timer.cancel( MoveTimer )
+							timer.cancel( spawnTimer )
+							local options = {params = {won = false}}
+							display.remove(gridGroup)
+							storyboard.gotoScene( "endScreen", options )
+						end
+					end
 				end
-				troopFinishedMovingCount = 0
 			end
-			if troops[index].hp > 0  then
-				health = health - 10
-				print(health .. " Base damaged!")
-				
-				healthDisplay.text = health .. " HP"
+
+		else --if it is dead
+			if troops[index].location ~= pathSize -1 then--if its not on the last cell and is dead
+				troops[index].location = pathSize-1 -- move it to the end
+				current = pathSize-1 
+				troopFinishedMovingCount = troopFinishedMovingCount + 1 --update the finished moving count
+				transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y }) --move the guy
 			end
 		end
-	else 
-		current = pathSize-1
-		
-		troopFinishedMovingCount = troopFinishedMovingCount + 1
-		print(troopFinishedMovingCount .. "==" .. troopCount)
-			if troopFinishedMovingCount  == troopCount then
-				timer.cancel( timers[index + 1] )
-				if RoundEnded == false then
-					coins = coins + 5
-					RoundEnded = true
-				end
-				troopsButton:setEnabled(true)
+		if troopFinishedMovingCount  == troopCount then -- if all have reached the end
+			print(troopFinishedMovingCount.. "   ".. troopCount)
+			if RoundEnded == false then -- round ended
+				print("round ended")
+				coins = coins + 5
 				troopFinishedMovingCount = 0
+				RoundEnded = true
 			end
-	end
-		coinsDisplay.text = coins .. " Coins"
-		transition.to(troops[index],{ delay = index * 450, x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y})
-	-- if it is the end, damage the base
+		end
+		coinsDisplay.text = coins .. " Coins" -- keep text field updated
+		local restart = function () -- next loop of troops
+			troops = {}
+			troopCount = 0
+			troopFinishedMovingCount = 0
+			spawnList = {}
+			
 
+			for i=1, math.random(roundCount*2, roundCount*4) do
+				temp = math.random(1,3)
+				if temp==1 then
+					spawnList[i] = "red"
+				elseif temp == 2 then
+					spawnList[i] = "green"
+				elseif temp == 3 then
+					spawnList[i] = "blue"
+				end
+			end
+			print("Game Restarted")
+			GameLogic(spawnList)
+		end
+		if index == troopCount - 1 and RoundEnded == true  then
+
+			if health <= 0 then 
+				timer.cancel( MoveTimer )
+				local options = {params = {won = false}}
+				--MoveAllTroopsToEnd()
+				display.remove(gridGroup)
+				storyboard.gotoScene( "endScreen", options ) --game over
+
+			
+			else
+				waitedTime = 0
+				timer.cancel( MoveTimer )
+				--MoveAllTroopsToEnd()
+				roundCount = roundCount + 1
+				roundDisplay.text = "Round " .. roundCount
+				timer.performWithDelay( 10000, restart, 1)
+			end
+		end
+	end
+end
+
+function MoveAllTroopsToEnd()
+	current = pathSize - 1
+	for i=0, table.getn(troops) do
+		transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y}) --move the guy
+	end
 end
 
 function GameLogic(spawnArray)
 	--Take in array of troops to spawn, spawn one, move it, spawn another, move it
-	print( table.getn(spawnArray)  )
-	timers = {}
 	RoundEnded = false
-	for num = 1, table.getn(spawnArray) do
-		SpawnTroop(spawnArray[num])
-		move = function() return MoveTroop(num-1) end
-		timers[num] = timer.performWithDelay(500, move, pathSize-1)
+	--for num = 1, table.getn(spawnArray) d	--	move = function() return MoveTroop(num-1) end
+	--	timers[num] = timer.performWithDelay(500 , move, pathSize-1)
+	--end
+	troops = {}
+	troopCount = 0
+	spawnCount = 0
+	troopFinishedMovingCount = 0
+	spawnFunctionTimer = function () 
+		spawnCount = spawnCount + 1
+		return SpawnTroop(spawnArray[spawnCount])
 	end
-
+	spawnTimer = timer.performWithDelay( 500 , spawnFunctionTimer, table.getn(spawnArray) )
+	MoveTimer = timer.performWithDelay( 550 , MoveAllTroops, table.getn(spawnArray) + pathSize - 1)
+	spawnTimerON = true
+	moveTimerON = true
 	-- add funtion to shoot at the troops with a cool down of 1 second. 
 
 
@@ -513,54 +580,72 @@ end
 function TowersCanHit(troop)
 	--loop through all the towers and see if they can hit this troop
 	--this function should get called every time a troop moves (MoveTroop function)
+	if towerCount == 0 then
+		return
+	end
+
+	if not troop.alive then
+		return
+	end
+
 	for i=0,table.getn(towers) do
 		xdistance = (troop.x - towers[i].x) ^ 2
 		ydistance = (troop.y - towers[i].y) ^ 2
 		troopDistance = (xdistance + ydistance)^(1/2)
 		local minimumDistance = (display.contentWidth/width) * 2
 		if troopDistance <= minimumDistance then
-			if troop.hp > 0 then
+			towers[i].coolDown = towers[i].coolDown - 1
+			if troop.hp > 0 then 
+				if towers[i].coolDown <= 0 then
+					laser = display.newLine(  towers[i].x, towers[i].y, troop.x, troop.y )
+					laser.width = 3
+					towers[i].coolDown = 5
+					if towers[i].color == "red" then
+						--if the color of the tower is red, then the laser is red
+						laser:setColor(255,0,0)
+						
+					elseif towers[i].color == "blue" then
+						--if the tower is blue then the laser is blue
+						laser:setColor(0,0,255)
 
-				laser = display.newLine(  towers[i].x, towers[i].y, troop.x, troop.y )
-				laser.width = 3
-				if towers[i].color == "red" then
-					--if the color of the tower is red, then the laser is red
-					laser:setColor(255,0,0)
 
-				elseif towers[i].color == "blue" then
-					--if the tower is blue then the laser is blue
-					laser:setColor(0,0,255)
-				elseif towers[i].color == "green" then
-					--if the tower is green then the laser is green
-					laser:setColor(55,125,35)
+					elseif towers[i].color == "green" then
+						--if the tower is green then the laser is green
+						laser:setColor(55,125,35)
+						
+
+					end
+
+					transition.to(laser,{alpha = 0, time = 100})
+
+					if troop.color == towers[i].color then
+						troop.hp = troop.hp - 20
+					else  troop.hp = troop.hp - 4
+
+					end
+
+					if troop.hp <= 0 and troop.alive == true then
+						troop.hp = 0
+						troop.alive = false
+						coins = coins + 1
+						coinsDisplay.text = coins .. " Coins"
+					end
 				end
-
-				transition.to(laser,{alpha = 0, time = 100})
-
-				if troop.color == towers[i].color then
-					troop.hp = troop.hp - 5
-				else
-					troop.hp = troop.hp - 2
-				end
-				if troop.hp <= 0 and troop.alive == true then
-					troop.hp = 0
-					troop.alive = false
-					coins = coins + 1
-					coinsDisplay.text = coins .. " Coins"
-				end
-			else 
+			--[[else 
 				--audio.play(deathSound)
 				troop.hp = 0
 				if troop.alive == true then
 					coins = coins + 1
 					coinsDisplay.text = coins .. " Coins"
 					troop.alive = false
-				end
+				end]]
 
 			end
 		end
 	end
 end
+
+
 
 
 function SendPathOverNetwork()
