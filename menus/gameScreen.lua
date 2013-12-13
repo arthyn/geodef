@@ -2,6 +2,30 @@ local storyboard = require "storyboard"
 local scene = storyboard.newScene()
 local widget = require "widget"
 
+local LoadBalancingClient
+local LoadBalancingConstants
+local tableutil
+local Logger
+local photon
+
+if pcall(require,"plugin.photon") then -- try to load Corona photon plugin
+    photon = require "plugin.photon"    
+    LoadBalancingClient = photon.loadbalancing.LoadBalancingClient
+    LoadBalancingConstants = photon.loadbalancing.constants
+    Logger = photon.common.Logger
+    tableutil = photon.common.util.tableutil    
+else  -- or load photon.lua module
+    photon = require("photon")
+    LoadBalancingClient = require("photon.loadbalancing.LoadBalancingClient")
+    LoadBalancingConstants = require("photon.loadbalancing.constants")
+    Logger = require("photon.common.Logger")
+    tableutil = require("photon.common.util.tableutil")    
+end
+
+local appInfo = require("cloud-app-info")
+
+local net = require "network"
+
 
 Constants = 
 		{
@@ -31,10 +55,11 @@ function troopsButtonRelease()
 		params = {
 			pathSend = path,
 			hpSend = health,
-			sizeSend = pathSize,
+			pathSizeSend = pathSize,
 			coinsSend = coins,
 			gridSend = grid,
-			towerSend = towers
+			towerSend = towers,
+			networkSend = network1
 		}
 	}
 	storyboard.gotoScene("buyTroops", options)
@@ -72,8 +97,10 @@ function scene:enterScene( event )
 	local group = self.view
 	path = event.params.pathSend
 	pathSize = event.params.pathSizeSend
+	print("Hey dude pathsize is " .. pathSize)
 	network1 = event.params.networkSend
 	gridGroup = display.newGroup()
+	timer.performWithDelay(200, network1:service(), 0)
 	if event.params.towerSend == nil then
 		print("Entry from first screen")
 		
@@ -101,11 +128,7 @@ function scene:enterScene( event )
 		GameLogic(event.params.spawnList)
 	end
 
-    params = {
-        pathSend = path,
-        pathSizeSend = pathSize,
-        networkSend = network1
-	}
+   
 
 	-- while table.getn(network1:myRoomActors()) < 2 do
 	--     print(table.getn(network1:myRoomActors()))
@@ -366,12 +389,12 @@ function BuildPath(height, width, path)
 		
 		direction = math.random(0, 2)
 	end
-	if count < (height * width)/4 then  --if it doesn't use at least 1/3 of the grid
-		for index = 0, count-1 do
-			table.remove( path )
-		end
-		BuildPath(height,width,path) --rebuild path
-	end
+	-- if count < (height * width)/4 then  --if it doesn't use at least 1/3 of the grid
+	-- 	for index = 0, count-1 do
+	-- 		table.remove( path )
+	-- 	end
+	-- 	BuildPath(height,width,path) --rebuild path
+	-- end
 	return count
 	
 end

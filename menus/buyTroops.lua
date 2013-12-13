@@ -2,6 +2,39 @@ local storyboard = require "storyboard"
 local scene = storyboard.newScene()
 local widget = require "widget"
 
+local LoadBalancingClient
+local LoadBalancingConstants
+local tableutil
+local Logger
+local photon
+
+if pcall(require,"plugin.photon") then -- try to load Corona photon plugin
+    photon = require "plugin.photon"    
+    LoadBalancingClient = photon.loadbalancing.LoadBalancingClient
+    LoadBalancingConstants = photon.loadbalancing.constants
+    Logger = photon.common.Logger
+    tableutil = photon.common.util.tableutil    
+else  -- or load photon.lua module
+    photon = require("photon")
+    LoadBalancingClient = require("photon.loadbalancing.LoadBalancingClient")
+    LoadBalancingConstants = require("photon.loadbalancing.constants")
+    Logger = require("photon.common.Logger")
+    tableutil = require("photon.common.util.tableutil")    
+end
+
+local appInfo = require("cloud-app-info")
+
+local net = require "network"
+
+
+Constants = 
+		{
+			SendPath = 0,
+			SendTroops = 1,
+			GameResult = 2, 
+			Ack = 99
+		}
+
 circles = display.newGroup()
 
 local function createButton(buttonLabel, release)
@@ -20,7 +53,7 @@ local function backButtonRelease()
 	local options = {
 		params = {
 			pathSend = path,
-			sizeSend = pathSize,
+			pathSizeSend = pathSize,
 			coinSend = coins,
 			gridSend = grid,
 			towerSend = towers
@@ -30,18 +63,34 @@ local function backButtonRelease()
 end
 
 local function finishButtonRelease()
+	local troops = {
+			spawnList = troopsBought
+		}
+
+	--table.remove(params, networkSend)
+
+	network1:raiseEvent(Constants.SendTroops, troops, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
+	network1:service()
+
+	while(network1.troops == nil) do
+		network1:service()
+		socket.sleep(.1)
+	end
+	print("sending path size " .. pathSize)
 	local options = {
 		params = {
 			pathSend = path,
 			hpSend = health,
-			sizeSend = pathSize,
+			pathSizeSend = pathSize,
 			coinSend = coins,
 			gridSend = grid,
 			towerSend = towers,
-			spawnList = troopsBought
+			spawnList = network1.troops,
+			networkSend = network1
 		}
 	}
-		storyboard.gotoScene( "gameScreen", options )
+
+	storyboard.gotoScene( "gameScreen", options )
 end
 
 function redTap(event)
@@ -103,10 +152,14 @@ function scene:createScene( event )
 	coins = event.params.coinsSend
 	path = event.params.pathSend
 	health = event.params.hpSend
-	pathSize = event.params.sizeSend
+
+	pathSize = event.params.pathSizeSend
+	print("sending path size " .. pathSize)
 	coins = event.params.coinsSend
 	grid = event.params.gridSend
 	towers = event.params.towerSend
+	network1 = event.params.networkSend
+
 
 	local redCircle = display.newCircle(display.contentWidth * (.3),
 		display.contentHeight * (.1), 50)
@@ -145,6 +198,7 @@ end
 
 function scene:enterScene( event )
 	local group = self.view
+	
 	troopsBought = {}
 	
 end

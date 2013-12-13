@@ -27,8 +27,6 @@ local appInfo = require("cloud-app-info")
 
 local net = require "network"
 
-SendPath = 100
-Results = 200
 
 Constants = 
 		{
@@ -148,19 +146,19 @@ function GoToGame( )
 		end
 
 		print(pathSize)
-		local options = {
-			params = {
-				path, pathSize
-			}
-		}
+		-- local options = {
+		-- 	params = {
+		-- 		path, pathSize
+		-- 	}
+		-- }
 
-        options = {
-	        params = {
-		        pathSend = path,
-		        pathSizeSend = pathSize,
-		        networkSend = network1
-	    	}
-	    }
+  --       options = {
+	 --        params = {
+		--         pathSend = path,
+		--         pathSizeSend = pathSize,
+		--         networkSend = network1
+	 --    	}
+	 --    }
 		--
         -- local data = {}
         -- data[1] =  path
@@ -213,7 +211,7 @@ function scene:enterScene( event )
 
     --timer.performWithDelay( 2000, ConnectToPlayer, 1)
 
-    timer.performWithDelay( 500, f, 0)
+    CONNECTIONTIMER = timer.performWithDelay( 1000, f, 0)
 
 	--If you are player one generate the path and send it to the other player
 
@@ -407,46 +405,64 @@ function createClient()
         
         --self.value = content[1]
 
-        print("\nRECEVIED EVENT\n")
+        print("\nRECEVIED EVENT " .. code  )
 
         if code == Constants.SendPath then
+	        
 
-	        params = 
-	        	{
-			        pathSend = content.path,
-			        pathSizeSend = content.pathSize
-		    	}
+	    	--timer.cancel(CONNECTIONTIMER)
 
 			if self.host == false then
-		    	self:raiseEvent( Constants.Ack, params, { receivers = LoadBalancingConstants.ReceiverGroup.Others } ) 
+				print("SENDING ACK TO HOST")
+				-- for i=1,4 do
+		    		self:raiseEvent( Constants.Ack, content, { receivers = LoadBalancingConstants.ReceiverGroup.Others } )
+		    		-- socket.sleep(0.2)
+		    							-- print(i)
+				-- end
+
 		    end
 
-		    print("\nGo to game scene\n")
+				    local options = {
+				    					params = 
+							        	{
+									        pathSend = content.pathSend,
+									        pathSizeSend = content.pathSizeSend,
+									        networkSend = self
+								    	}
+				    				}
 
-		    networkSend = network1
-		    table.insert(params, networkSend)
-		    local options = {params}
-
-			storyboard.gotoScene("gameScreen", options)
+				    -- print("I am not hosting with pathsize of " .. options.params.pathSizeSend)
+					storyboard.gotoScene("gameScreen", options)
 
 	    end
 
 	    if code == Constants.Ack and self.host == true then
 
+	    	print("Host received ACK from client")
+	    	timer.cancel(CONNECTIONTIMER)
+
 			print("\n\nGo to game scene - host\n\n")
 
+	         local options = {
+		    					 params = 
+					        	{
+							        pathSend = content.pathSend,
+							        pathSizeSend = content.pathSizeSend,
+							        networkSend = self
+						    	}
+		    				 }
 
-	        params = 
-	        	{
-			        pathSend = content.path,
-			        pathSizeSend = content.pathSize
-		    	}
+		    print("I am hosting and going to gamescene with pathsize of " .. options.params.pathSizeSend)
 
-		    networkSend = network1
-		    table.insert(params, networkSend)
-		    local options = {params}
-		    
 		    storyboard.gotoScene("gameScreen", options)
+		end
+
+		if code == Constants.SendTroops then
+		
+			print("Saving opponent's troops")
+
+			self.troops = content.spawnList
+
 		end
 
 	end
@@ -480,6 +496,11 @@ function createClient()
 
 
 	function client:timer(event)
+
+		local params = {
+					        pathSend = 0,
+					        pathSizeSend= 0
+				    	}
 
 	    local str = nil
 	    if self.mRunning then
@@ -520,25 +541,67 @@ function createClient()
 						pathSize = BuildPath(height,width,path) --rebuild path
 					end
 
-					print(pathSize)
+					
 					params = {
-					        pathSend = path,
-					        pathSizeSend = pathSize
-				    	}
-					local options = {
-						params
-					}
+						        pathSend = path,
+						        pathSizeSend= pathSize
+				    		 }
 
-
+				    print("I am host and I am sending client path of size " .. params.pathSizeSend)
+				    --timer.cancel(CONNECTIONTIMER)
 				    self:raiseEvent( Constants.SendPath, params, { receivers = LoadBalancingConstants.ReceiverGroup.Others } ) 
 
-				else
-					print("Not Host")
-					-- while true do
-					-- 	self:service()
-					-- end
+				    self:service()
+
+
+
+				    socket.sleep(0.5)
+
+				    local options = {
+				    					params = 
+							        	{
+									        pathSend = path,
+									        pathSizeSend = pathSize,
+									        networkSend = self
+								    	}
+				    				}
+
+				    -- print("I am not hosting with pathsize of " .. options.params.pathSizeSend)
+					storyboard.gotoScene("gameScreen", options)
+
 				end
+
 	        end
+
+	        if waiting.text == "Proceeding to Game" and self.host == false then
+	        	print("\nGo to game scene\n")
+		   
+				timer.cancel(CONNECTIONTIMER)
+
+					-- 				path = {}
+					-- height = 10
+					-- width = 20
+					-- pathSize = BuildPath(height,width,path)
+
+					-- while pathSize < (height * width)/4 do  --if it doesn't use at least 1/3 of the grid
+					-- 	for index = 0, pathSize-1 do
+					-- 		table.remove( path )
+					-- 	end
+					-- 	pathSize = BuildPath(height,width,path) --rebuild path
+					-- end
+
+			    local options = {
+			    					params = 
+						        	{
+								        pathSend = path,
+								        pathSizeSend = pathSize,
+								        networkSend = self
+							    	}
+			    				}
+
+			    print("I am not hosting with pathsize of " .. options.params.pathSizeSend)
+				storyboard.gotoScene("gameScreen", options)
+			end
 
 	    else
 	        timer.cancel(event.source)
