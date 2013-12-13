@@ -87,8 +87,14 @@ end
 
 function scene:exitScene( event )
 	local group = self.view
-		timer.cancel( MoveTimer )
-		timer.cancel( spawnTimer )
+        if movetimer ~= nill then
+            timer.cancel( MoveTimer )
+        end
+
+        if spawnTimer ~= nill then
+            timer.cancel( spawnTimer )
+        end
+
 	display.remove( gridGroup )
 	
 end
