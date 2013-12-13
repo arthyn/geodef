@@ -465,7 +465,7 @@ end
 
 function MoveAllTroops()
 	print("moving troops")
-	for index = 0, table.getn(troops) do -- loop through all spawned troops
+	for index = 0, table.getn(troops) - 1 do -- loop through all spawned troops
 		if troops[index].hp > 0  then --if troop is alive
 		 	if troops[index].location ~= pathSize - 1 then -- and if its not on the last cell
 				troops[index].location = troops[index].location + 1 --move a troop to the next cell
