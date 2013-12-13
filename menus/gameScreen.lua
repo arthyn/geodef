@@ -489,6 +489,7 @@ function MoveAllTroops()
 								local options = {params = {won = false}}
 								display.remove(gridGroup)
 								network1:raiseEvent(Constants.GameResult, {true}, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
+								network1:service()
 								network1:leaveRoom()
 								storyboard.gotoScene( "endScreen", options )
 							end
@@ -526,6 +527,7 @@ function MoveAllTroops()
 				--MoveAllTroopsToEnd()
 				display.remove(gridGroup)
 				network1:raiseEvent(Constants.GameResult, {true}, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
+				network1:service()
 				network1:leaveRoom()
 				storyboard.gotoScene( "endScreen", options ) --game over
 
