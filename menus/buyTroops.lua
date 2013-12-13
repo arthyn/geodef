@@ -103,6 +103,8 @@ local function finishButtonRelease()
 	network1:raiseEvent(Constants.SendTroops, troops, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
 	network1:service()
 
+	finishButton:setEnabled(false)
+
 	jumpBack = timer.performWithDelay( 500, checkJumpBack, 0)
 
 	-- while(table.getn(network1.troops) == 0) do
