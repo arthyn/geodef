@@ -72,10 +72,17 @@ function scene:createScene( event )
 	local background = display.newImage( "wallpaper.png")
 	background:translate(0,0)
 	background:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
+	print(display.contentWidth)
+	print(display.contentHeight)
+	background:scale(1602/display.contentWidth, 1) 
 
-	local name = display.newText("geodef", 0, 0, native.systemFont, 100)
-	name.x = display.contentWidth * .5
-	name.y = display.contentHeight * (4/13)
+	local logo = display.newImage( "logo.png")
+	logo:translate(0,0)
+	
+
+	--local name = display.newText("geodef", 0, 0, native.systemFont, 100)
+	--name.x = display.contentWidth * .5
+	--name.y = display.contentHeight * (4/13)
 
 	local newGameButton = createButton("Single Player", newGameButtonRelease)
 	newGameButton.x = display.contentWidth * .25
@@ -102,9 +109,9 @@ function scene:createScene( event )
 
 	-- insert all objects here
 	group:insert(background)
+	group:insert(logo)
 	group:insert(creditsButton)
 	group:insert(multiplayerButton)
-	group:insert(name)
 	group:insert(newGameButton)
 	group:insert(settingsButton)
 	group:insert(helpButton)
