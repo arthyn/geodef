@@ -79,7 +79,7 @@ local function finishButtonRelease()
 
 	while(table.getn(network1.troops) == 0) do
 		network1:service()
-		socket.sleep(.1)
+		socket.sleep(5)
 	end
 	print("sending path size " .. pathSize)
 	local options = {
