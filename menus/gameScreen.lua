@@ -61,7 +61,8 @@ function troopsButtonRelease()
 			coinsSend = coins,
 			gridSend = grid,
 			towerSend = towers,
-			networkSend = network1
+			networkSend = network1,
+			roundCountSend = roundCount
 		}
 	}
 	storyboard.gotoScene("buyTroops", options)
@@ -70,6 +71,7 @@ end
 function scene:createScene( event )
 	local group = self.view
 	roundCount = 1
+
 	coins = 10
 	health = 100 --decrease this when a troop makes it to your base
 	local quitButton = createButton("Quit", quitButtonRelease)
@@ -119,6 +121,7 @@ function scene:enterScene( event )
 
 	else
 		health = event.params.hpSend
+		roundCount = event.params.roundCountSend
 		healthDisplay.text = health .. " HP"
 		Copygrid = event.params.gridSend
 		Copytowers = event.params.towerSend

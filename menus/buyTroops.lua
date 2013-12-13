@@ -55,8 +55,10 @@ local function backButtonRelease()
 			pathSend = path,
 			pathSizeSend = pathSize,
 			coinSend = coins,
+			hpSend = health,
 			gridSend = grid,
 			towerSend = towers,
+			roundCountSend = roundCount,
 			networkSend = network1
 		}
 	}
@@ -64,7 +66,7 @@ local function backButtonRelease()
 end
 
 local function finishButtonRelease()
-	if spawnList == nil then
+	if troopsBought == nil then
 		return
 	end
 	local troops = {
@@ -89,6 +91,7 @@ local function finishButtonRelease()
 			coinSend = coins,
 			gridSend = grid,
 			towerSend = towers,
+			roundCountSend = roundCount,
 			spawnList = network1.troops,
 			networkSend = network1
 		}
