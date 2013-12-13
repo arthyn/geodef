@@ -221,7 +221,7 @@ function ChangeColor(event)
 end
 function reBuildGrid(copiedGrid, height, width)
 	local screenWidth = display.contentWidth 
-	local screenHeight = display.contentHeight - 100  --The subtraction is for menu space
+	local screenHeight = display.contentHeight - (display.contentHeight/6)  --The subtraction is for menu space
 	towerCount = 0
 	for xPiece = 0, width do
 		points[xPiece] = {}
@@ -294,7 +294,7 @@ end
 function BuildGrid(points,grid,height, width)
 
 	local screenWidth = display.contentWidth 
-	local screenHeight = display.contentHeight - 100  --The subtraction is for menu space
+	local screenHeight = display.contentHeight - (display.contentHeight/6)  --The subtraction is for menu space
 
 	for xPiece = 0, width do
 		points[xPiece] = {}
