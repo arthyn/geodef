@@ -506,6 +506,7 @@ function MoveAllTroops()
 				coins = coins + 5
 				troopFinishedMovingCount = 0
 				RoundEnded = true
+				troopsButton:setEnabled(true)
 			end
 		end
 		coinsDisplay.text = coins .. " Coins" -- keep text field updated
