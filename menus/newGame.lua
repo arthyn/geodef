@@ -23,12 +23,12 @@ else  -- or load photon.lua module
     tableutil = require("photon.common.util.tableutil")    
 end
 
-local appInfo =  require("cloud-app-info")
--- {
---     MasterAddress = "app-jp.exitgamescloud.com:5055",
---     AppId = "b0ce1e2f-589f-450f-bf64-2224c7d73096",
---     AppVersion =  "1.0",
--- }
+local appInfo = {
+    MasterAddress = "app-jp.exitgamescloud.com:5055",
+    AppId = "b0ce1e2f-589f-450f-bf64-2224c7d73096",
+    AppVersion =  "1.0",
+}
+--require("cloud-app-info")
 
 local net = require "network"
 
