@@ -56,7 +56,8 @@ local function backButtonRelease()
 			pathSizeSend = pathSize,
 			coinSend = coins,
 			gridSend = grid,
-			towerSend = towers
+			towerSend = towers,
+			networkSend = network1
 		}
 	}
 	storyboard.gotoScene( "gameScreen", options )
