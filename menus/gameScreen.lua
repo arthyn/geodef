@@ -487,6 +487,7 @@ function MoveAllTroops()
 								timer.cancel( spawnTimer )
 								local options = {params = {won = false}}
 								display.remove(gridGroup)
+								network1:raiseEvent(Constants.GameResult, {true}, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
 								storyboard.gotoScene( "endScreen", options )
 							end
 						end
@@ -543,6 +544,16 @@ function MoveAllTroopsToEnd()
 	end
 end
 
+function checkResult()
+	if not network1.win then
+		network1:service()
+	else
+		local options = {params = {won = true}}
+		storyboard.gotoScene("endScreen", options)
+	end
+end
+
+
 function GameLogic(spawnArray)
 	--Take in array of troops to spawn, spawn one, move it, spawn another, move it
 	RoundEnded = false
@@ -560,6 +571,7 @@ function GameLogic(spawnArray)
 	end
 	spawnTimer = timer.performWithDelay( 500 , spawnFunctionTimer, table.getn(spawnArray) )
 	MoveTimer = timer.performWithDelay( 550 , MoveAllTroops, table.getn(spawnArray) + pathSize - 1)
+	winCheck = timer.performWithDelay( 500, checkResult, 0)
 	spawnTimerON = true
 	moveTimerON = true
 	-- add funtion to shoot at the troops with a cool down of 1 second. 

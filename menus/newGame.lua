@@ -366,7 +366,7 @@ function createClient()
 	local client = LoadBalancingClient.new(appInfo.MasterAddress, appInfo.AppId, appInfo.AppVersion)
 
 	local lastErrMess = ""
-
+	client.win = false
 	math.randomseed( os.time() )
 
 	client.mState = "Init"
@@ -477,6 +477,9 @@ function createClient()
 
 			self.troops = content.spawnList
 
+		end
+		if code == Constants.GameResult then
+			self.win = content[1]
 		end
 
 	end
