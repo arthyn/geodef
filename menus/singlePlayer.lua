@@ -30,6 +30,7 @@ function startButtonRelease()
 
 function scene:createScene( event )
 	local group = self.view
+	roundCount = 1
 
 	coins = 10
 	health = 100 --decrease this when a troop makes it to your base
@@ -46,6 +47,10 @@ function scene:createScene( event )
 	healthDisplay.x = display.contentWidth * (.3)
 	healthDisplay.y = display.contentHeight * (.9)
 
+	roundDisplay = display.newText("Round " .. roundCount, 0, 0, native.systemFont, 40)
+	roundDisplay.x = display.contentWidth * (.5)
+	roundDisplay.y = display.contentHeight * (.9)
+
 	coinsDisplay = display.newText(coins.. " Coins", 0, 0, native.systemFont, 40)
 	coinsDisplay.x = display.contentWidth * (.7)
 	coinsDisplay.y = display.contentHeight * (.9)
@@ -54,13 +59,13 @@ function scene:createScene( event )
 	group:insert(startButton)
 	group:insert(coinsDisplay)
 	group:insert(healthDisplay)
+	group:insert(roundDisplay)
 
 
 end
 
 function scene:enterScene( event )
 	local group = self.view
-	roundCount = 1
 	path = event.params.pathSend
 	pathSize = event.params.sizeSend
 	gridGroup = display.newGroup()
@@ -446,7 +451,8 @@ function MoveAllTroops()
 			troopCount = 0
 			troopFinishedMovingCount = 0
 			spawnList = {}
-			roundCount = roundCount + 1
+			
+
 			for i=1, math.random(roundCount*2, roundCount*4) do
 				temp = math.random(1,3)
 				if temp==1 then
@@ -474,6 +480,8 @@ function MoveAllTroops()
 				waitedTime = 0
 				timer.cancel( MoveTimer )
 				--MoveAllTroopsToEnd()
+				roundCount = roundCount + 1
+				roundDisplay.text = "Round " .. roundCount
 				timer.performWithDelay( 10000, restart, 1)
 			end
 		end

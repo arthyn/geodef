@@ -36,8 +36,8 @@ function scene:createScene( event )
 	logo:translate(0,0)
 	logo.x = display.contentWidth * .5
 	logo.y = display.contentHeight * (4/14)
-	
-	local text = display.newText(" ~ Tap to place the default tower type \n ~ Keep taping to change tower type \n ~ Towers do more damage to same type troops \n ~ Troops reduce health if they reach the base \n ~ Player loses when they run out of health \n ~ In multiplayer, you win when opponent loses \n ~ In single player, you play until you lose ", display.contentWidth/5, display.contentHeight/2.3, display.contentWidth, display.contentHeight, native.systemFont, 30)
+
+	local text = display.newText(" ~ Tap to place the default tower type \n ~ Keep taping to change tower type \n ~ Towers do more damage to same type troops \n ~ Troops reduce health if they reach the base \n ~ Player loses when they run out of health \n ~ In multiplayer, you win when opponent loses \n ~ In single player, you play until you lose ", display.contentWidth/5, display.contentHeight/2.3, display.contentWidth, display.contentHeight, native.systemFont, 25)
 
 	local backButton = createButton("Back", backButtonRelease)
 	backButton.x = display.contentWidth * (.5)
