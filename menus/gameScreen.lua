@@ -545,6 +545,7 @@ function GameLogic(spawnArray)
 	--for num = 1, table.getn(spawnArray) d	--	move = function() return MoveTroop(num-1) end
 	--	timers[num] = timer.performWithDelay(500 , move, pathSize-1)
 	--end
+	roundDisplay.text = "Round " .. roundCount
 	troops = {}
 	troopCount = 0
 	spawnCount = 0
