@@ -188,6 +188,11 @@ function GoToGame( )
 
 end
 
+function f(  )
+	-- body
+	network1:timer()
+end
+
 function scene:enterScene( event )
 	
 	local group = self.view
@@ -204,10 +209,11 @@ function scene:enterScene( event )
 
 --	end
 
-    timer.performWithDelay( 1000, JoinLobby, 1)
+    -- timer.performWithDelay( 1000, JoinLobby, 1)
 
     --timer.performWithDelay( 2000, ConnectToPlayer, 1)
 
+    timer.performWithDelay( 500, f, 0)
 
 	--If you are player one generate the path and send it to the other player
 
@@ -405,23 +411,23 @@ function createClient()
 
         if code == Constants.SendPath then
 
-        	print("\nGoing to game scene\n")
-
-	        options = {
-		        params = {
+	        params = 
+	        	{
 			        pathSend = content.path,
-			        pathSizeSend = content.pathSize,
-			        networkSend = network1
+			        pathSizeSend = content.pathSize
 		    	}
-		    }
-
-		    print("\n\nGo to game scene\n\n")
-
-			storyboard.gotoScene("gameScreen", options)
 
 			if self.host == false then
 		    	self:raiseEvent( Constants.Ack, params, { receivers = LoadBalancingConstants.ReceiverGroup.Others } ) 
 		    end
+
+		    print("\nGo to game scene\n")
+
+		    networkSend = network1
+		    table.insert(params, networkSend)
+		    local options = {params}
+
+			storyboard.gotoScene("gameScreen", options)
 
 	    end
 
@@ -429,14 +435,19 @@ function createClient()
 
 			print("\n\nGo to game scene - host\n\n")
 
+
+	        params = 
+	        	{
+			        pathSend = content.path,
+			        pathSizeSend = content.pathSize
+		    	}
+
+		    networkSend = network1
+		    table.insert(params, networkSend)
+		    local options = {params}
+		    
 		    storyboard.gotoScene("gameScreen", options)
 		end
-
-
-        -- if client.mReceiveCount == 500 then
-        --     self.mState = "Data Received"  
-        --     client:disconnect();
-        -- end
 
 	end
 
@@ -469,19 +480,70 @@ function createClient()
 
 
 	function client:timer(event)
+
 	    local str = nil
 	    if self.mRunning then
 	        self:update()
+
+	        if waiting.text ==  "Connecting to server..." then
+	        	if not self:isJoinedToRoom() then
+	        		--self:connect()
+	        	else
+	        		waiting.text =  "Waiting for an opponent..."
+	        	end
+	        end
+
+	        if waiting.text ==  "Waiting for an opponent..." then
+	        	print(table.getn(self:myRoomActors()))
+	        	if table.getn(self:myRoomActors()) == 1 then
+			    	self.host = true
+			    elseif table.getn(self:myRoomActors()) > 1 then
+					waiting.text = "Found opponent"
+				end
+			end
+
+	        if waiting.text == "Found opponent" then
+
+        		if self.host then
+
+					print("RAISE EVENT")
+
+					path = {}
+					height = 10
+					width = 20
+					pathSize = BuildPath(height,width,path)
+
+					while pathSize < (height * width)/4 do  --if it doesn't use at least 1/3 of the grid
+						for index = 0, pathSize-1 do
+							table.remove( path )
+						end
+						pathSize = BuildPath(height,width,path) --rebuild path
+					end
+
+					print(pathSize)
+					params = {
+					        pathSend = path,
+					        pathSizeSend = pathSize
+				    	}
+					local options = {
+						params
+					}
+
+
+				    self:raiseEvent( Constants.SendPath, params, { receivers = LoadBalancingConstants.ReceiverGroup.Others } ) 
+
+				else
+					print("Not Host")
+					-- while true do
+					-- 	self:service()
+					-- end
+				end
+	        end
+
 	    else
 	        timer.cancel(event.source)
 	        self.mState = "Stopped"
 	    end
-
-	    str = client:getStateString()
-
-	  --  stateText.text = LoadBalancingClient.StateToName(self.state)
-	  --  thingText.text = str
-	  --  countText.text = self.mSendCount
 
 	end
 

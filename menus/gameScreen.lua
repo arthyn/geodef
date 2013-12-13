@@ -107,12 +107,12 @@ function scene:enterScene( event )
         networkSend = network1
 	}
 
-	while table.getn(network1:myRoomActors()) < 2 do
-	    --print(table.getn(network1:myRoomActors()))
-	    --network1:timer()
-    	network1:raiseEvent( Constants.SendPath, params, { receivers = LoadBalancingConstants.ReceiverGroup.Others } ) 
-	    socket.sleep(0.5)
-	end
+	-- while table.getn(network1:myRoomActors()) < 2 do
+	--     print(table.getn(network1:myRoomActors()))
+	--     --network1:timer()
+ --    	network1:raiseEvent( Constants.SendPath, params, { receivers = LoadBalancingConstants.ReceiverGroup.Others } ) 
+	--     socket.sleep(0.5)
+	-- end
 end
 
 function scene:exitScene( event )

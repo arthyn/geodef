@@ -1,6 +1,6 @@
 return {
-    MasterAddress = "app-us.exitgamescloud.com:5055",
-    AppId = "1ded9a21-2000-4ddc-ac7e-df862c0a129c",
+    MasterAddress = "app-eu.exitgamescloud.com:5055",
+    AppId = "b0ce1e2f-589f-450f-bf64-2224c7d73096",
     AppVersion =  "1.0",
 }
 
