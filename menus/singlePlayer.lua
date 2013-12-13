@@ -408,7 +408,7 @@ function MoveAllTroops()
 				troops[index].location = troops[index].location + 1 --move a troop to the next cell
 				current = troops[index].location
 				TowersCanHit(troops[index])
-				transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y}) --move the guy
+				transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y, alpha = troops[index].hp/troops[index].maxhp}) --move the guy
 			else --it is alive, and on the last cell
 				if not troops[index].finished then
 				troopFinishedMovingCount = troopFinishedMovingCount + 1
@@ -433,7 +433,7 @@ function MoveAllTroops()
 				troops[index].location = pathSize-1 -- move it to the end
 				current = pathSize-1 
 				troopFinishedMovingCount = troopFinishedMovingCount + 1 --update the finished moving count
-				transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y}) --move the guy
+				transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y }) --move the guy
 			end
 		end
 		if troopFinishedMovingCount  == troopCount then -- if all have reached the end
