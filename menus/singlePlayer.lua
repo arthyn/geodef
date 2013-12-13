@@ -30,7 +30,7 @@ function startButtonRelease()
 
 function scene:createScene( event )
 	local group = self.view
-
+	roundCount = 1
 	coins = 10
 	health = 100 --decrease this when a troop makes it to your base
 
@@ -46,6 +46,10 @@ function scene:createScene( event )
 	healthDisplay.x = display.contentWidth * (.3)
 	healthDisplay.y = display.contentHeight * (.9)
 
+	roundDisplay = display.newText("Round " .. roundCount, 0, 0, native.systemFont, 40)
+	roundDisplay.x = display.contentWidth * (.5)
+	roundDisplay.y = display.contentHeight * (.9)
+
 	coinsDisplay = display.newText(coins.. " Coins", 0, 0, native.systemFont, 40)
 	coinsDisplay.x = display.contentWidth * (.7)
 	coinsDisplay.y = display.contentHeight * (.9)
@@ -54,13 +58,14 @@ function scene:createScene( event )
 	group:insert(startButton)
 	group:insert(coinsDisplay)
 	group:insert(healthDisplay)
+	group:insert(roundDisplay)
 
 
 end
 
 function scene:enterScene( event )
 	local group = self.view
-	roundCount = 1
+	--roundCount = 1
 	path = event.params.pathSend
 	pathSize = event.params.sizeSend
 	gridGroup = display.newGroup()
@@ -427,7 +432,7 @@ function MoveAllTroops()
 				troops[index].location = troops[index].location + 1 --move a troop to the next cell
 				current = troops[index].location
 				TowersCanHit(troops[index])
-				transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y}) --move the guy
+				transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y, alpha = troops[index].hp/troops[index].maxhp}) --move the guy
 			else --it is alive, and on the last cell
 				if not troops[index].finished then
 				troopFinishedMovingCount = troopFinishedMovingCount + 1
@@ -467,6 +472,8 @@ function MoveAllTroops()
 			if RoundEnded == false then -- round ended
 				print("round ended")
 				coins = coins + 5
+				roundCount = roundCount + 1
+				roundDisplay.text = "Round " .. roundCount
 				troopFinishedMovingCount = 0
 				RoundEnded = true
 			end
@@ -478,7 +485,7 @@ function MoveAllTroops()
 			troopCount = 0
 			troopFinishedMovingCount = 0
 			spawnList = {}
-			roundCount = roundCount + 1
+			
 			for i=1, math.random(roundCount*2, roundCount*4) do
 				temp = math.random(1,9)
 				if temp==1 or temp == 7 then

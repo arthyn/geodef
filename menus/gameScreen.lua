@@ -504,6 +504,8 @@ function MoveAllTroops()
 			if RoundEnded == false then -- round ended
 				print("round ended")
 				coins = coins + 5
+				roundCount = roundCount + 1
+				roundDisplay.text = "Round " .. roundCount
 				troopFinishedMovingCount = 0
 				RoundEnded = true
 				troops = {}
@@ -525,8 +527,7 @@ function MoveAllTroops()
 				waitedTime = 0
 				timer.cancel( MoveTimer )
 				--MoveAllTroopsToEnd()
-				roundCount = roundCount + 1
-				roundDisplay.text = "Round " .. roundCount
+				
 			end
 		end
 	end
