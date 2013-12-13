@@ -133,7 +133,9 @@ function smallCircleTap(event)
 	table.remove( troopsBought, event.target.index )
 	coins = coins + 1
 	coinsDisplay.text = coins .. " Coins"
-	if(table.getn(troopsBought) == 0)
+	if(table.getn(troopsBought) == 0) then
+		finishButton:setEnabled(false)
+	end
 	drawTroopList()
 end
 
