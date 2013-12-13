@@ -70,6 +70,7 @@ function checkJumpBack( )
 
 	if(table.getn(network1.troops) == 0) then
 		network1:service()
+		network1:raiseEvent(Constants.SendTroops, troops, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
 	else
 		timer.cancel(jumpBack)
 
