@@ -77,7 +77,7 @@ local function finishButtonRelease()
 	network1:raiseEvent(Constants.SendTroops, troops, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
 	network1:service()
 
-	while(network1.troops == {}) do
+	while(table.getn(network1.troops) == 0) do
 		network1:service()
 		socket.sleep(.1)
 	end
