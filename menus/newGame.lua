@@ -27,6 +27,17 @@ local appInfo = require("cloud-app-info")
 
 local net = require "network"
 
+SendPath = 100
+Results = 200
+
+Constants = 
+		{
+			SendPath = 0,
+			SendTroops = 1,
+			GameResult = 2, 
+			Ack = 99
+		}
+
 local function createButton(buttonLabel, release)
 	local button = widget.newButton{
 		label = buttonLabel,
@@ -80,27 +91,105 @@ function scene:createScene( event )
 
 end
 
-function stuff()
+function JoinLobby()
+
 	    while not network1:isJoinedToRoom() do
 	        network1:timer()
 	        socket.sleep(1)
 	    end
+
 		waiting.text = "Waiting for an opponent..."
 
 	    if table.getn(network1:myRoomActors()) == 1 then
 	    	network1.host = true
 	    end
+	    print(network1:myRoom())
+	    print(network1:availableRooms())
+	    ConnectToPlayer()
 end
 
-function stuff2( )
+function ConnectToPlayer( )
 	    while table.getn(network1:myRoomActors()) < 2 do
+	    	print(table.getn(network1:myRoomActors()))
 	        network1:timer()
-	        socket.sleep(1)
+	        socket.sleep(0.5)
 	    end
+
+	    print(table.getn(network1:myRoomActors()))
+
 		waiting.text = "Found opponent"
+		if network1.host then
+			waiting.text = "Found opponent : Is host"
+		end
+
+		GoToGame()
+end
+
+function keepSendingEvent( )
+	
+    	network1:raiseEvent( Constants.SendPath, params, { receivers = LoadBalancingConstants.ReceiverGroup.Others } ) 
+end
+
+function GoToGame( )
+
+	if network1.host then
+		print("\n\n IS HOST \n\n")
+
+		path = {}
+		height = 10
+		width = 20
+		pathSize = BuildPath(height,width,path)
+
+		while pathSize < (height * width)/4 do  --if it doesn't use at least 1/3 of the grid
+			for index = 0, pathSize-1 do
+				table.remove( path )
+			end
+			pathSize = BuildPath(height,width,path) --rebuild path
+		end
+
+		print(pathSize)
+		local options = {
+			params = {
+				path, pathSize
+			}
+		}
+
+        options = {
+	        params = {
+		        pathSend = path,
+		        pathSizeSend = pathSize,
+		        networkSend = network1
+	    	}
+	    }
+		--
+        -- local data = {}
+        -- data[1] =  path
+        -- data[2] =  height
+
+     --    while table.getn(network1:myRoomActors()) < 2 do
+     --    	print("k");
+     --    	network1:service()
+	    --     socket.sleep(0.1)
+     --    end
+
+     --    socket.sleep(0.1)
+
+    	-- network1:raiseEvent( Constants.SendPath, params, { receivers = LoadBalancingConstants.ReceiverGroup.Others } ) 
+
+
+		-- print("\n\nGo to game scene - host\n\n")
+
+	 --    storyboard.gotoScene("gameScreen", options)
+	else
+		while true do
+			network1:service()
+		end
+	end
+
 end
 
 function scene:enterScene( event )
+	
 	local group = self.view
 	--networking code should go here
 	--when an opponent is found, transition to gameScreen
@@ -115,24 +204,51 @@ function scene:enterScene( event )
 
 --	end
 
-	    timer.performWithDelay( 1000, stuff, 0)
+    timer.performWithDelay( 1000, JoinLobby, 1)
 
-
-	    timer.performWithDelay( 2000, stuff2, 0)
-
+    --timer.performWithDelay( 2000, ConnectToPlayer, 1)
 
 
 	--If you are player one generate the path and send it to the other player
-	path = {}
-	height = 10
-	width = 20
-	pathSize = BuildPath(height,width,path)
-	print(pathSize)
-	local options = {
-		params = {
-			pathSend = path, sizeSend=pathSize
-		}
-	}
+
+	-- if network1.host then
+	-- 	print("\n\n IS HOST \n\n")
+	-- end
+
+	-- if network1.host then
+
+	-- 	path = {}
+	-- 	height = 10
+	-- 	width = 20
+	-- 	pathSize = BuildPath(height,width,path)
+	-- 	print(pathSize)
+	-- 	local options = {
+	-- 		params = {
+	-- 			path, pathSize
+	-- 		}
+	-- 	}
+
+	-- 	--
+ --        -- local data = {}
+ --        -- data[1] =  path
+ --        -- data[2] =  height
+
+ --        self:raiseEvent( Constants.SendPath, params, { receivers = LoadBalancingConstants.ReceiverGroup.Others } ) 
+
+	--         options = {
+	-- 	        params = {
+	-- 		        pathSend = path,
+	-- 		        pathSizeSend = pathSize,
+	-- 		        networkSend = network1
+	-- 	    	}
+	-- 	    }
+
+
+	-- 	print("\n\nGo to game scene - host\n\n")
+
+	--     storyboard.gotoScene("gameScreen", options)
+	-- end
+
 	--storyboard.gotoScene("gameScreen", options)
 
 
@@ -219,12 +335,7 @@ function BuildPath(height, width, path)
 		
 		direction = math.random(0, 2)
 	end
-	if count < (height * width)/4 then  --if it doesn't use at least 1/3 of the grid
-		for index = 0, count-1 do
-			table.remove( path )
-		end
-		BuildPath(height,width,path) --rebuild path
-	end
+	
 	return count
 	
 end
@@ -285,17 +396,52 @@ function createClient()
 
 	function client:onEvent(code, content, actorNr)
 	    self.logger:debug("on event", code, tableutil.toStringReq(content))
-	    print("RECEVIED EVENT")
-	        client.mReceiveCount = client.mReceiveCount + 1
-	        self.value = content[1]
-	        if client.mReceiveCount == 500 then
-	            self.mState = "Data Received"  
-	            client:disconnect();
-	        end
+
+        --client.mReceiveCount = client.mReceiveCount + 1
+        
+        --self.value = content[1]
+
+        print("\nRECEVIED EVENT\n")
+
+        if code == Constants.SendPath then
+
+        	print("\nGoing to game scene\n")
+
+	        options = {
+		        params = {
+			        pathSend = content.path,
+			        pathSizeSend = content.pathSize,
+			        networkSend = network1
+		    	}
+		    }
+
+		    print("\n\nGo to game scene\n\n")
+
+			storyboard.gotoScene("gameScreen", options)
+
+			if self.host == false then
+		    	self:raiseEvent( Constants.Ack, params, { receivers = LoadBalancingConstants.ReceiverGroup.Others } ) 
+		    end
+
+	    end
+
+	    if code == Constants.Ack and self.host == true then
+
+			print("\n\nGo to game scene - host\n\n")
+
+		    storyboard.gotoScene("gameScreen", options)
+		end
+
+
+        -- if client.mReceiveCount == 500 then
+        --     self.mState = "Data Received"  
+        --     client:disconnect();
+        -- end
+
 	end
 
 	function client:update()
-	    self:sendData()
+	    -- self:sendData()
 	    self:service()
 	end
 

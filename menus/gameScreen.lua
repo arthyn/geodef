@@ -1,6 +1,15 @@
 local storyboard = require "storyboard"
 local scene = storyboard.newScene()
 local widget = require "widget"
+
+
+Constants = 
+		{
+			SendPath = 0,
+			SendTroops = 1,
+			GameResult = 2
+		}
+
 local function createButton(buttonLabel, release)
 	local button = widget.newButton{
 		label = buttonLabel,
@@ -62,7 +71,8 @@ end
 function scene:enterScene( event )
 	local group = self.view
 	path = event.params.pathSend
-	pathSize = event.params.sizeSend
+	pathSize = event.params.pathSizeSend
+	network1 = event.params.networkSend
 	gridGroup = display.newGroup()
 	if event.params.towerSend == nil then
 		print("Entry from first screen")
@@ -89,6 +99,19 @@ function scene:enterScene( event )
 		troopCount = 0
 		troopsButton:setEnabled(false)
 		GameLogic(event.params.spawnList)
+	end
+
+    params = {
+        pathSend = path,
+        pathSizeSend = pathSize,
+        networkSend = network1
+	}
+
+	while table.getn(network1:myRoomActors()) < 2 do
+	    --print(table.getn(network1:myRoomActors()))
+	    --network1:timer()
+    	network1:raiseEvent( Constants.SendPath, params, { receivers = LoadBalancingConstants.ReceiverGroup.Others } ) 
+	    socket.sleep(0.5)
 	end
 end
 
