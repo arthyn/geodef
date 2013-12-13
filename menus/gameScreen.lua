@@ -178,6 +178,7 @@ function ChangeColor(event)
 		grid[event.target.xPos][event.target.yPos].color = "red"
 		event.target.index = towerCount --so next time its clicked you know what index number it is in the tower array
 		towers[towerCount] = event.target
+		towers[towerCount].coolDown = 5
 		towerCount = towerCount + 1
 		coins = coins - 1
 		coinsDisplay.text = coins .. " Coins"
