@@ -35,24 +35,24 @@ function scene:createScene( event )
 	health = 100 --decrease this when a troop makes it to your base
 
 	local quitButton = createButton("Quit", quitButtonRelease)
-	quitButton.x = display.contentWidth * (.15)
-	quitButton.y = display.contentHeight * (.9)
+	quitButton.x = display.contentWidth/100 * 15
+	quitButton.y = display.contentHeight/100 * 95
 
 	startButton = createButton("Start Round", startButtonRelease)
-	startButton.x = display.contentWidth * (.85)
-	startButton.y = display.contentHeight * (.9)
+	startButton.x = display.contentWidth/100 * 85
+	startButton.y = display.contentHeight/100 * 95
 
 	healthDisplay = display.newText(health .. " HP", 0, 0, native.systemFont, 40)
-	healthDisplay.x = display.contentWidth * (.3)
-	healthDisplay.y = display.contentHeight * (.9)
+	healthDisplay.x = display.contentWidth/100 * 30
+	healthDisplay.y = display.contentHeight/100 * 95
 
 	roundDisplay = display.newText("Round " .. roundCount, 0, 0, native.systemFont, 40)
-	roundDisplay.x = display.contentWidth * (.5)
-	roundDisplay.y = display.contentHeight * (.9)
+	roundDisplay.x = display.contentWidth/100 * 50
+	roundDisplay.y = display.contentHeight/100 * 95
 
 	coinsDisplay = display.newText(coins.. " Coins", 0, 0, native.systemFont, 40)
-	coinsDisplay.x = display.contentWidth * (.7)
-	coinsDisplay.y = display.contentHeight * (.9)
+	coinsDisplay.x = display.contentWidth/100 * 70
+	coinsDisplay.y = display.contentHeight/100 * 95
 
 	group:insert(quitButton)
 	group:insert(startButton)
