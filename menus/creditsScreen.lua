@@ -23,8 +23,12 @@ function scene:createScene( event )
 	local group = self.view
 
 	local background = display.newImage( "wallpaper.png")
-	background:translate(0,0)
+	--background:translate(0,0)
 	background:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
+	background.width = display.contentWidth
+	background.height = display.contentHeight
+	background.x = display.contentWidth/2
+	background.y = display.contentHeight/2
 
 	local logo = display.newImage( "logo.png")
 	logo:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))

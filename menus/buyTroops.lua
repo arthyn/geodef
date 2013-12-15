@@ -184,10 +184,16 @@ function drawTroopList()
 			display.contentHeight * (.5), 30)
 		if troopsBought[i] == "red" then
 			circle:setFillColor(255, 0, 0)
+			circle.strokeWidth = 2
+			circle:setStrokeColor(0,0,0)
 		elseif troopsBought[i] == "green" then
 			circle:setFillColor(55, 125, 35)
+			circle.strokeWidth = 2
+			circle:setStrokeColor(0,0,0)
 		elseif troopsBought[i] == "blue" then
 			circle:setFillColor(0, 0, 255)
+			circle.strokeWidth = 2
+			circle:setStrokeColor(0,0,0)
 		end
 		circle.index = i
 		circle:addEventListener("tap", smallCircleTap)
@@ -212,16 +218,22 @@ function scene:createScene( event )
 	local redCircle = display.newCircle(display.contentWidth * (.3),
 		display.contentHeight * (.1), 50)
 	redCircle:setFillColor(255, 0, 0)
+	redCircle.strokeWidth = 2
+	redCircle:setStrokeColor(0,0,0)
 	redCircle:addEventListener("tap", redTap)
 
 	local greenCircle = display.newCircle(display.contentWidth * (.5),
 		display.contentHeight * (.1), 50)
 	greenCircle:setFillColor(55, 125, 35)
+	green.strokeWidth = 2
+	green:setStrokeColor(0,0,0)
 	greenCircle:addEventListener("tap", greenTap)
 
 	local blueCircle = display.newCircle(display.contentWidth * (.7),
 		display.contentHeight * (.1), 50)
 	blueCircle:setFillColor(0, 0, 255)
+	blueCircle.strokeWidth = 2
+	blueCircle:setStrokeColor(0,0,0)
 	blueCircle:addEventListener("tap", blueTap)
 	coinsDisplay = display.newText(coins.. " Coins", 0, 0, native.systemFont, 40)
 	coinsDisplay.x = display.contentWidth * (.5)

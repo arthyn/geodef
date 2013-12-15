@@ -70,10 +70,13 @@ function scene:createScene( event )
 	-- create all items here
 
 	local background = display.newImage( "wallpaper.png")
-	background:translate(0,0)
+	--background:translate(0,0)
 	background:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
-
-	background:scale(1602/display.contentWidth, 1) 
+	background.width = display.contentWidth
+	background.height = display.contentHeight
+	background.x = display.contentWidth/2
+	background.y = display.contentHeight/2
+	--background:scale(1602/display.contentWidth, 1) 
 
 	local logo = display.newImage( "logo.png")
 	logo:setFillColor(math.random(50, 255), math.random(50, 255), math.random(50, 255))
