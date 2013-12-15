@@ -115,11 +115,9 @@ function scene:enterScene( event )
 	timer.performWithDelay(200, network1:service(), 0)
 	if event.params.towerSend == nil then
 		print("Entry from first screen")
-		
 		towers = {} --this is a list of all the towers 0 represents no tower, 1,2,3 represents color
 		grid = {} --this is a list of squares
 		towerCount = 0 --keep track of how many towers you have
-		
 		BuildGrid(points,grid,height,width)
 
 	else
@@ -140,15 +138,6 @@ function scene:enterScene( event )
 		troopsButton:setEnabled(false)
 		GameLogic(event.params.spawnList)
 	end
-
-   
-
-	-- while table.getn(network1:myRoomActors()) < 2 do
-	--     print(table.getn(network1:myRoomActors()))
-	--     --network1:timer()
- --    	network1:raiseEvent( Constants.SendPath, params, { receivers = LoadBalancingConstants.ReceiverGroup.Others } ) 
-	--     socket.sleep(0.5)
-	-- end
 end
 
 function scene:exitScene( event )
@@ -281,16 +270,6 @@ function reBuildGrid(copiedGrid, height, width)
 			count = count + 1 
 		end
 	end
-	--[[for x = 0, width do
-		for y = 0, height do
-			
-			local myCircle = display.newCircle(gridGroup, points[x][y].x, points[x][y].y, 5 )
-			myCircle:setFillColor(128,128,128)
-			myCircle.alpha = 0;
-			transition.to( myCircle, {time=1000, alpha=1})
-		end
-	end
-	]]
 end
 
 function BuildGrid(points,grid,height, width)
@@ -333,16 +312,6 @@ function BuildGrid(points,grid,height, width)
 			count = count + 1 
 		end
 	end
---[[	for x = 0, width do
-		for y = 0, height do
-			
-			local myCircle = display.newCircle(gridGroup, points[x][y].x, points[x][y].y, 5 )
-			myCircle:setFillColor(128,128,128)
-			myCircle.alpha = 0;
-			transition.to( myCircle, {time=1000, alpha=1})
-		end
-	end
---]]
 end
 
 function BuildPath(height, width, path)
@@ -410,12 +379,6 @@ function BuildPath(height, width, path)
 		
 		direction = math.random(0, 2)
 	end
-	-- if count < (height * width)/4 then  --if it doesn't use at least 1/3 of the grid
-	-- 	for index = 0, count-1 do
-	-- 		table.remove( path )
-	-- 	end
-	-- 	BuildPath(height,width,path) --rebuild path
-	-- end
 	return count
 	
 end
@@ -444,6 +407,8 @@ function SpawnTroop(color)
 		troops[troopCount].maxhp = 100
 		troops[troopCount].location = 0
 		troops[troopCount].color = color
+		troops[troopCount].damage = 5
+		troops[troopCount].locationIncrement = 1
 		troops[troopCount].alive = true
 		if color == "red" then
 			troops[troopCount]:setFillColor(255,0,0)
@@ -472,16 +437,16 @@ function MoveAllTroops()
 			print("Troop " .. index .. " has " .. troops[index].hp .. " hp")
 			if troops[index].hp > 0  then --if troop is alive
 			 	if troops[index].location ~= pathSize - 1 then -- and if its not on the last cell
-					troops[index].location = troops[index].location + 1 --move a troop to the next cell
+					troops[index].location = troops[index].location + troops[index].locationIncrement --move a troop to the next cell
 					current = troops[index].location
 					TowersCanHit(troops[index])
-					transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y, alpha = troops[index].hp/troops[index].maxhp}) --move the guy
+					transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y}) --move the guy
 				else --it is alive, and on the last cell
 					if not troops[index].finished then
 					troopFinishedMovingCount = troopFinishedMovingCount + 1
 					troops[index].finished = true
 						if health > 0 then
-							health = health - 10
+							health = health - troops[index].damage
 							print(health .. " Base damaged!") -- damage the base
 							healthDisplay.text = health .. " HP"
 							if health <= 0 then
@@ -526,7 +491,6 @@ function MoveAllTroops()
 			if health <= 0 then 
 				timer.cancel( MoveTimer )
 				local options = {params = {won = false}}
-				--MoveAllTroopsToEnd()
 				display.remove(gridGroup)
 				network1:raiseEvent(Constants.GameResult, {true}, { receivers = LoadBalancingConstants.ReceiverGroup.Others })
 				network1:service()
@@ -538,7 +502,7 @@ function MoveAllTroops()
 			else
 				waitedTime = 0
 				timer.cancel( MoveTimer )
-				--MoveAllTroopsToEnd()
+				
 				
 			end
 		end
@@ -546,12 +510,6 @@ function MoveAllTroops()
 end
 end
 
-function MoveAllTroopsToEnd()
-	current = pathSize - 1
-	for i=0, table.getn(troops) do
-		transition.to(troops[index],{  x=grid[path[current].x][path[current].y].rect.x, y=grid[path[current].x][path[current].y].rect.y}) --move the guy
-	end
-end
 
 function checkResult()
 	if not network1.win then
@@ -606,37 +564,44 @@ function TowersCanHit(troop)
 		xdistance = (troop.x - towers[i].x) ^ 2
 		ydistance = (troop.y - towers[i].y) ^ 2
 		troopDistance = (xdistance + ydistance)^(1/2)
-		local minimumDistance = (display.contentWidth/width) * 2
+		local minimumDistance = (display.contentWidth/width) * towerRange
 		if troopDistance <= minimumDistance then
-			towers[i].coolDown = towers[i].coolDown - 1
 			if troop.hp > 0 then 
-				if towers[i].coolDown <= 0 then
-					laser = display.newLine(  towers[i].x, towers[i].y, troop.x, troop.y )
-					laser.width = 3
-					towers[i].coolDown = 5
+				if towers[i].coolDown == towerMaxCoolDown then
+					
+					local damageDone = towerDamage
+					if troop.color == towers[i].color then
+						damageDone = towerDamage * 2
+					end
+					troop.hp = troop.hp - damageDone
+					troop:scale(1 - damageDone/troop.maxhp, 1 - damageDone/troop.maxhp)
+					local laser = display.newCircle( towers[i].x,towers[i].y, damageDone/towerDamage + 4 )
+					laser:setStrokeColor( 0,0,0 )
+					laser.strokeWidth = 2
+					removeLaser = function(object) object:removeSelf() end 
 					if towers[i].color == "red" then
 						--if the color of the tower is red, then the laser is red
-						laser:setColor(255,0,0)
+						laser:setFillColor(255,0,0)
 						
 					elseif towers[i].color == "blue" then
 						--if the tower is blue then the laser is blue
-						laser:setColor(0,0,255)
+						laser:setFillColor(0,0,255)
 
 
 					elseif towers[i].color == "green" then
 						--if the tower is green then the laser is green
-						laser:setColor(55,125,35)
+						laser:setFillColor(55,125,35)
 						
 
 					end
 
-					transition.to(laser,{alpha = 0, time = 100})
+					
+					--laser = display.newLine(  towers[i].x, towers[i].y, troop.x, troop.y )
+					--laser.width = 3
 
-					if troop.color == towers[i].color then
-						troop.hp = troop.hp - 20
-					else  troop.hp = troop.hp - 4
+					transition.to(laser,{ x=troop.x, y=troop.y, time = 200, onComplete = removeLaser})
 
-					end
+					
 
 					if troop.hp <= 0 and troop.alive == true then
 						troop.hp = 0
@@ -645,58 +610,20 @@ function TowersCanHit(troop)
 						coinsDisplay.text = coins .. " Coins"
 					end
 				end
-			--[[else 
-				--audio.play(deathSound)
-				troop.hp = 0
-				if troop.alive == true then
-					coins = coins + 1
-					coinsDisplay.text = coins .. " Coins"
-					troop.alive = false
-				end]]
-
 			end
+		end
+		towers[i].coolDown = towers[i].coolDown - 1
+		if towers[i].coolDown <= 0 then
+			towers[i].coolDown = towerMaxCoolDown
 		end
 	end
 end
 
 
-
-
-function SendPathOverNetwork()
-	-- If you are creator, send path
-end
-
-function ReceivePathOverNetwork()
-	-- If you are not creator, receive path
-end
-
-function SendTroopsOverNetwork()
-	-- At the end of your turn, send which type
-end
-
-function ReceiveTroopsOverNetwork()
-	-- At the beginnning of your turn, receive where the enemy has placed their towers
-end
-
-
-function showTroopSelectPopup(troops)
-	-- spawn a popup allowing the user to select what color troops they are sending 
-end
-
-function isRoundOver()
-	-- determines if all the troops are dead
-	--Build towers, select troops, send round done and array of troops
-	--When you are done wait for the other player to send their troop array,
-	--When they do, spawn troops and go. Once troops are done build towers and select troops
-end
-
-
-
-
-
 math.randomseed( os.time() ) --seed random number generator
 math.random() --randomly generate a value
---deathSound = audio.loadStream("gameexplosion.wav")
+
+
 points = {} --this is a list of all the points on the game
 
 height = 10 --change this to alter how many cells for height
@@ -704,12 +631,11 @@ width = 20	--change this to alter how many cells per width
  --this is the path object that the troops walk on
 troops = {} --this is a list of all the troops the enemy has sent at you
 troopCount = 0 --this is to keep track of spawned troops
-troopFinishedMovingCount = 0
+troopFinishedMovingCount = 0 -- keeps track of how many troops are done moving
+towerDamage = 10 -- keeps track of how much damage a tower does
+towerMaxCoolDown = 3 -- keeps track of how fast towers can shoot
+towerRange = 4 --how far a tower can shoot
 
-
---coins = 10 --change this to alter how much money you start with
-
---SpawnStack = {"red","blue","red","blue","green","blue","red","blue","green"}
 
 
 

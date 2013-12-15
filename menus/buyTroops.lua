@@ -225,8 +225,8 @@ function scene:createScene( event )
 	local greenCircle = display.newCircle(display.contentWidth * (.5),
 		display.contentHeight * (.1), 50)
 	greenCircle:setFillColor(55, 125, 35)
-	green.strokeWidth = 2
-	green:setStrokeColor(0,0,0)
+	greenCircle.strokeWidth = 2
+	greenCircle:setStrokeColor(0,0,0)
 	greenCircle:addEventListener("tap", greenTap)
 
 	local blueCircle = display.newCircle(display.contentWidth * (.7),
