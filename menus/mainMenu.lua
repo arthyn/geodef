@@ -46,7 +46,7 @@ local function helpButtonRelease()
 end
 
 local function multiplayerButtonRelease()
-	path = {}
+	--[[path = {}
 	height = 10
 	width = 20
 	pathSize = BuildPath(height,width,path)
@@ -55,7 +55,10 @@ local function multiplayerButtonRelease()
 			pathSend = path, sizeSend=pathSize
 		}
 	}
+
 	storyboard.gotoScene("newGame", options)
+	]]
+	storyboard.gotoScene("newGame")
 	return true
 end
 
